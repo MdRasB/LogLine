@@ -16,5 +16,5 @@ A centralized logging system built in Go.
 - Containerization: Docker
 
 ## Status
-🚧 In active development
+🚧 In active development 
 EOF
