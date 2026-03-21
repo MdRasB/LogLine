@@ -1,4 +1,3 @@
-cat > README.md << 'EOF'
 # Logline
 
 A centralized logging system built in Go.
@@ -17,4 +16,3 @@ A centralized logging system built in Go.
 
 ## Status
 🚧 In active development 
-EOF
