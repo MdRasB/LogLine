@@ -4,40 +4,65 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	//"encoding/json"
 )
 
-type User struct {
-	Name string `json:"name"`
-}
-var userCache = make(map[int]User)
+type HeathResponse struct {
+	Status string `json:"status"`
 
-func main(){
+}
+
+type IngestResponse struct {
+	Message string `json:"message"`
+}
+
+type ErrorResponse struct {
+	Error string `json:"error"`
+}
+
+func main() {
 	logServe := http.NewServeMux()
-	logServe.HandleFunc("/", logServRoot)
 
-	logServe.HandleFunc("POST /users", createUser)
+	logServe.HandleFunc("GET /health", handleHealth)
+	logServe.HandleFunc("POST /ingest", handleIngest)
 
-	fmt.Println("Server listening to :8080")
-	http.ListenAndServe(":8080", logServe)
-}
 
-func logServRoot(w http.ResponseWriter, r *http.Request){
-	w.Write([]byte("Hello"))
-}
-
-func createUser(w http.ResponseWriter, r *http.Request){
-	var user User
-	err := json.NewDecoder(r.Body).Decode(&user)
+	fmt.Println("Starting server on :8080")
+	err := http.ListenAndServe(":8080", logServe)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		fmt.Println("Error starting server:", err)
+	}
+}
+
+func handleHealth(w http.ResponseWriter, r *http.Request){
+	//msg := HeathResponse{}
+	if r.Method != http.MethodGet {
+		writeJsonResponse(w, http.StatusMethodNotAllowed, ErrorResponse{
+			Error: "method not allowed",
+		})
 		return
 	}
+	writeJsonResponse(w, http.StatusOK, HeathResponse{
+		Status: "ok",
+	})
+}
 
-	if user.Name == "" {
-		http.Error(w, "Name is required", http.StatusBadRequest)
+
+func handleIngest(w http.ResponseWriter, r *http.Request){
+	if r.Method != http.MethodPost {
+		writeJsonResponse(w, http.StatusMethodNotAllowed, ErrorResponse{
+			Error: "method not allowed",
+		})
 		return
 	}
+	writeJsonResponse(w,http.StatusOK, IngestResponse{
+		Message: "received",
+	})
 
-	userCache[len(userCache)+1] = user
-	w.WriteHeader(http.StatusNoContent)
+}
+
+func writeJsonResponse(w http.ResponseWriter, statusCode int, data interface{}) {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(statusCode)
+	json.NewEncoder(w).Encode(data)
 }
