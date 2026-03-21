@@ -1,4 +1,3 @@
-cat > README.md << 'EOF'
 # Logline
 
 A centralized logging system built in Go.
