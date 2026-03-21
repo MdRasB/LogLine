@@ -1,68 +1,20 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
-	"net/http"
-	//"encoding/json"
+	"log"
+
+	"github.com/MdRasB/LogLine/internal/server"
 )
 
-type HeathResponse struct {
-	Status string `json:"status"`
-
-}
-
-type IngestResponse struct {
-	Message string `json:"message"`
-}
-
-type ErrorResponse struct {
-	Error string `json:"error"`
-}
-
 func main() {
-	logServe := http.NewServeMux()
+	fmt.Println("Starting LogLine server...")
 
-	logServe.HandleFunc("GET /health", handleHealth)
-	logServe.HandleFunc("POST /ingest", handleIngest)
-
-
+	srv := server.NewServer(":8080")
 	fmt.Println("Starting server on :8080")
-	err := http.ListenAndServe(":8080", logServe)
+
+	err := srv.Start()
 	if err != nil {
-		fmt.Println("Error starting server:", err)
+		log.Fatalf("Failed to start server: %v", err)
 	}
-}
-
-func handleHealth(w http.ResponseWriter, r *http.Request){
-	//msg := HeathResponse{}
-	if r.Method != http.MethodGet {
-		writeJsonResponse(w, http.StatusMethodNotAllowed, ErrorResponse{
-			Error: "method not allowed",
-		})
-		return
-	}
-	writeJsonResponse(w, http.StatusOK, HeathResponse{
-		Status: "ok",
-	})
-}
-
-
-func handleIngest(w http.ResponseWriter, r *http.Request){
-	if r.Method != http.MethodPost {
-		writeJsonResponse(w, http.StatusMethodNotAllowed, ErrorResponse{
-			Error: "method not allowed",
-		})
-		return
-	}
-	writeJsonResponse(w,http.StatusOK, IngestResponse{
-		Message: "received",
-	})
-
-}
-
-func writeJsonResponse(w http.ResponseWriter, statusCode int, data interface{}) {
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(statusCode)
-	json.NewEncoder(w).Encode(data)
 }
