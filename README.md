@@ -16,4 +16,3 @@ A centralized logging system built in Go.
 
 ## Status
 🚧 In active development 
-EOF
