@@ -11,7 +11,7 @@ func main() {
 	fmt.Println("Starting LogLine server...")
 
 	srv := server.NewServer(":8080")
-	fmt.Println("Starting server on :8080")
+	fmt.Println("Starting the server on :8080")
 
 	err := srv.Start()
 	if err != nil {
