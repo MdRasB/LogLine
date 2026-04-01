@@ -18,11 +18,6 @@ type IngestResponse struct {
 func HandleIngest(w http.ResponseWriter, r *http.Request) {
 
 	r.Body = http.MaxBytesReader(w, r.Body, 1<<20)
-	_, err := io.ReadAll(r.Body)
-	if err != nil {
-		http.Error(w, "failed to read file", http.StatusBadRequest)
-		return
-	}
 
 	if r.Method != http.MethodPost {
 		writeJSON(w, http.StatusMethodNotAllowed, map[string]string{
@@ -33,7 +28,7 @@ func HandleIngest(w http.ResponseWriter, r *http.Request) {
 
 	var log model.Logs
 
-	err = jsonDecode(r.Body, log)
+	err := jsonDecode(r.Body, &log)
 	if err != nil {
 		http.Error(w, "invalid JSON body", http.StatusBadRequest)
 		return
@@ -54,7 +49,7 @@ func HandleIngest(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("Received request:", r.Method)
 }
 
-func jsonDecode(body io.Reader, log model.Logs) error {
+func jsonDecode(body io.Reader, log *model.Logs) error {
 
 	decoder := json.NewDecoder(body)
 	decoder.DisallowUnknownFields()
