@@ -11,10 +11,6 @@ import (
 	"github.com/MdRasB/LogLine/internal/model"
 )
 
-type IngestResponse struct {
-	Message string `json:"message"`
-}
-
 func HandleIngest(w http.ResponseWriter, r *http.Request) {
 
 	r.Body = http.MaxBytesReader(w, r.Body, 1<<20)
@@ -28,13 +24,12 @@ func HandleIngest(w http.ResponseWriter, r *http.Request) {
 
 	var log model.Logs
 
-	err := jsonDecode(r.Body, &log)
-	if err != nil {
+	if err := jsonDecode(r.Body, &log); err != nil {
 		http.Error(w, "invalid JSON body", http.StatusBadRequest)
 		return
 	}
 
-	if err = validate(log); err != nil {
+	if err := validate(log); err != nil {
 		http.Error(w, err.Error(), http.StatusUnprocessableEntity)
 		return
 	}
