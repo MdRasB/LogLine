@@ -1,9 +1,9 @@
 package model
 
 type Logs struct {
-	Level string
-	Message string
-	Service string
-	Timestamp string
-	Metadata map[string]interface{}
+	Level string   `json:"level"`
+	Message string	`json:"message"`
+	Service string	`json:"service"`
+	Timestamp string	`json:"timestamp"`
+	Metadata map[string]interface{} `json:"metadata,omitempty"`
 }
