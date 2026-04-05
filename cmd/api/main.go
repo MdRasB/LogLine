@@ -13,6 +13,7 @@ func main() {
 
 	cfg := config.Load()
 	port := cfg.Port
+	
 	srv := server.NewServer(port)
 	fmt.Println("Starting the server on :8080")
 
