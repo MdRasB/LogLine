@@ -1,0 +1,15 @@
+services:
+  db:
+    image: postgres:18
+    container_name: loglinedb
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: logline
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: loglinedb
+    volumes:
+      - pgdata:/var/lib/postgresql
+
+volumes:
+  pgdata:
