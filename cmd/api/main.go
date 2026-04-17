@@ -13,9 +13,10 @@ func main() {
 
 	cfg := config.Load()
 	port := cfg.Port
+	dbStr := cfg.DBURL
 	
-	srv := server.NewServer(port)
-	fmt.Println("Starting the server on :8080")
+	srv := server.NewServer(port, dbStr)
+	fmt.Printf("Starting the server on %v", port)
 
 	err := srv.Start()
 	if err != nil {
