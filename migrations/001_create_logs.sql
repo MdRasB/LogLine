@@ -1,5 +1,4 @@
 -- +goose Up
-CREATE EXTENSION IF NOT EXISTS pgcrypto;
 
 CREATE TABLE logs (
     id          UUID         PRIMARY KEY DEFAULT gen_random_uuid(),
