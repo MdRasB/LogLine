@@ -7,17 +7,17 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
-type dbStore struct {
+type DBStore struct {
 	db *pgxpool.Pool
 }
 
-func NewLogStore(db *pgxpool.Pool) *dbStore {
-	return &dbStore{
+func NewLogStore(db *pgxpool.Pool) *DBStore {
+	return &DBStore{
 		db: db,
 	}
 }
 
-func (s *dbStore) Insert(log model.Logs) error {
+func (s *DBStore) Insert(log model.Logs) error {
 	query := `
 			Insert Into logs (level, message, service, timestamp, metadata)
 			Values ($1, $2, $3, $4, $5)

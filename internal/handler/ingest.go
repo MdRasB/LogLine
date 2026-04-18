@@ -8,10 +8,22 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/MdRasB/LogLine/internal/db"
 	"github.com/MdRasB/LogLine/internal/model"
 )
 
-func HandleIngest(w http.ResponseWriter, r *http.Request) {
+type IngestHandler struct{
+	store *db.DBStore
+} 
+
+func NewIngestHandler(store *db.DBStore) *IngestHandler {
+	return &IngestHandler{
+		store : store,
+	}
+}
+
+//func HandleIngest(w http.ResponseWriter, r *http.Request) {
+func (h *IngestHandler) Handle(w http.ResponseWriter, r *http.Request) { 
 
 	r.Body = http.MaxBytesReader(w, r.Body, 1<<20)
 
@@ -32,6 +44,10 @@ func HandleIngest(w http.ResponseWriter, r *http.Request) {
 	if err := validate(log); err != nil {
 		http.Error(w, err.Error(), http.StatusUnprocessableEntity)
 		return
+	}
+
+	if err := h.store.Insert(log); err != nil {
+		http.Error(w, "failed to store log", http.StatusInternalServerError)
 	}
 
 	response := map[string]string{
