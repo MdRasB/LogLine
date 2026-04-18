@@ -3,6 +3,7 @@ module github.com/MdRasB/LogLine
 go 1.26.1
 
 require github.com/jackc/pgx/v5 v5.9.1
+require github.com/pressly/goose/v3/cmd/goose
 
 require (
 	github.com/jackc/pgpassfile v1.0.0 // indirect
