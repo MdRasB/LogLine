@@ -1,4 +1,4 @@
--- +goose Up
+ +goose Up
 CREATE EXTENSION IF NOT EXISTS pgcrypto;
 
 CREATE TABLE logs (
@@ -15,5 +15,5 @@ CREATE INDEX idx_logs_service   ON logs(service);
 CREATE INDEX idx_logs_level     ON logs(level);
 CREATE INDEX idx_logs_timestamp ON logs(timestamp DESC);
 
--- +goose Down
+ +goose Down
 DROP TABLE IF EXISTS logs;
