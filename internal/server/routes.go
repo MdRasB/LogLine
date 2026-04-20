@@ -5,6 +5,7 @@ import (
 )
 
 func (s *Server) registerRoutes() {
+	ingestHandler := handler.NewIngestHandler(&s.logStore)
 	s.mux.HandleFunc("/health", handler.HandleHealth)
-	s.mux.HandleFunc("/ingest", handler.HandleIngest)
+	s.mux.HandleFunc("/ingest", ingestHandler.Handle)
 }

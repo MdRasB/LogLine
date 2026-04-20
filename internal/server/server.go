@@ -12,6 +12,7 @@ type Server struct {
 	addr string
 	mux  *http.ServeMux
 	db   *pgxpool.Pool
+	logStore db.DBStore	
 }
 
 func NewServer(addr, dbstore string) *Server {
@@ -22,10 +23,13 @@ func NewServer(addr, dbstore string) *Server {
 		log.Fatalf("failed to initialize database: %v", err)
 	}
 
+	dbStore := db.NewLogStore(pool)
+
 	s := &Server{
 		addr: addr,
 		mux:  mux,
 		db:   pool,
+		logStore: *dbStore,
 	}
 
 	s.registerRoutes()

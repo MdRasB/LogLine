@@ -16,7 +16,7 @@ func main() {
 	dbStr := cfg.DBURL
 	
 	srv := server.NewServer(port, dbStr)
-	fmt.Printf("Starting the server on %v", port)
+	fmt.Printf("Starting the server on %v\n", port)
 
 	err := srv.Start()
 	if err != nil {
