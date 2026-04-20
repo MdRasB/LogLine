@@ -48,6 +48,7 @@ func (h *IngestHandler) Handle(w http.ResponseWriter, r *http.Request) {
 
 	if err := h.store.Insert(log); err != nil {
 		http.Error(w, "failed to store log", http.StatusInternalServerError)
+		return
 	}
 
 	response := map[string]string{

@@ -2,6 +2,7 @@ package db
 
 import (
 	"context"
+	//"fmt"
 
 	"github.com/MdRasB/LogLine/internal/model"
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -34,7 +35,8 @@ func (s *DBStore) Insert(log model.Logs) error {
 	)
 
 	if err != nil {
-		return nil
+		//fmt.Errorf("db: failed to insert log: %v", err)
+		return err
 	}
 	
 	return nil

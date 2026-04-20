@@ -2,7 +2,10 @@ module github.com/MdRasB/LogLine
 
 go 1.26.1
 
-require github.com/jackc/pgx/v5 v5.9.1
+require (
+	github.com/jackc/pgx/v5 v5.9.2
+	github.com/joho/godotenv v1.5.1
+)
 
 require (
 	filippo.io/edwards25519 v1.2.0 // indirect
@@ -25,7 +28,6 @@ require (
 	github.com/jackc/pgpassfile v1.0.0 // indirect
 	github.com/jackc/pgservicefile v0.0.0-20240606120523-5a60cdf6a761 // indirect
 	github.com/jackc/puddle/v2 v2.2.2 // indirect
-	github.com/joho/godotenv v1.5.1 // indirect
 	github.com/jonboulle/clockwork v0.5.0 // indirect
 	github.com/klauspost/compress v1.18.4 // indirect
 	github.com/mattn/go-isatty v0.0.20 // indirect

@@ -1,4 +1,6 @@
 -- +goose Up
+CREATE EXTENSION IF NOT EXISTS pgcrypto;
+-- pgcrypto must be installed in the database separately for gen_random_uuid()
 
 CREATE TABLE logs (
     id          UUID         PRIMARY KEY DEFAULT gen_random_uuid(),
