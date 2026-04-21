@@ -11,7 +11,6 @@ A centralized logging system built in Go.
 ## Stack
 - Language: Go
 - Database: PostgreSQL
-- Reverse Proxy: Caddy
 - Containerization: Docker
 
 ## Status
