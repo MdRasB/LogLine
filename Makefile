@@ -1,4 +1,4 @@
-.PHONY: run build db-up db-down migrate migrate-status test
+.PHONY: run build db-up db-down migrate migrate-status test db-run
 
 run:
 	go run cmd/api/main.go
@@ -25,6 +25,9 @@ migrate-status:
 	go run github.com/pressly/goose/v3/cmd/goose \
 	-dir migrations \
 	status
+
+db-run:
+	docker exec -it loglinedb psql -U logline -d loglinedb
 
 test:
 	go test ./...
