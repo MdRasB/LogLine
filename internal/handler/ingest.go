@@ -41,7 +41,7 @@ func (h *IngestHandler) Handle(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := validate(log); err != nil {
+	if err := Validate(log); err != nil {
 		http.Error(w, err.Error(), http.StatusUnprocessableEntity)
 		return
 	}
@@ -68,45 +68,6 @@ func jsonDecode(body io.Reader, log *model.Logs) error {
 	if err := decoder.Decode(&log); err != nil {
 		//http.Error(w, "invalid JSON body", http.StatusBadRequest)
 		return errors.New("invalid json")
-	}
-
-	return nil
-
-}
-
-func validate(log model.Logs) error {
-
-	if log.Level == "" {
-		return errors.New("level is required")
-	}
-
-	validLevels := map[string]bool{
-		"error": true,
-		"debug": true,
-		"info":  true,
-		"fatal": true,
-		"warn":  true,
-	}
-
-	if !validLevels[log.Level] {
-		return errors.New("invalid level")
-	}
-
-	if log.Message == "" {
-		return errors.New("message is required")
-	}
-
-	if log.Service == "" {
-		return errors.New("service is required")
-	}
-
-	if log.Timestamp == "" {
-		return errors.New("timestamp is required")
-	}
-
-	_, err := time.Parse(time.RFC3339, log.Timestamp)
-	if err != nil {
-		return errors.New("invalid timestamp")
 	}
 
 	return nil
