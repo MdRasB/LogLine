@@ -2,6 +2,9 @@ package db
 
 import (
 	"context"
+	"encoding/json"
+	"fmt"
+
 	//"fmt"
 
 	"github.com/MdRasB/LogLine/internal/model"
@@ -40,4 +43,65 @@ func (s *DBStore) Insert(log model.Logs) error {
 	}
 	
 	return nil
+}
+
+func (s *DBStore) GetLogs(
+	lf model.LogFilter,
+	ctx context.Context,
+)(*model.PaginatedLogs, error) {
+	countQ, countArgs := CountLogsQuery(lf)
+
+	var total int
+	err := s.db.QueryRow(ctx, countQ, countArgs...).Scan(&total)
+	if err != nil {
+		return nil, fmt.Errorf("db: count logs: %w", err)
+	}
+
+	query, args := GetLogsQuery(lf)
+
+	rows, err := s.db.Query(ctx, query, args...)
+	if err != nil {
+		return nil, fmt.Errorf("db: query logs: %w", err)
+	}
+
+	defer rows.Close()
+
+	logs := []model.LogEntry{}
+
+	for rows.Next() {
+		var l model.LogEntry
+		var metaBytes []byte
+
+		err := rows.Scan(
+			&l.ID,
+			&l.Level,
+			&l.Message,
+			&l.Service,
+			&l.Timestamp,
+			&metaBytes,
+			&l.CreatedAt,
+		)
+		if err != nil {
+			return nil, fmt.Errorf("db: scan log row: %w", err)
+		}
+
+		if metaBytes != nil {
+			_ = json.Unmarshal(metaBytes, &l.Metadata)
+		}
+
+		logs = append(logs, l)
+		
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, fmt.Errorf("db: rows error: %w", err)
+	}
+
+	return &model.PaginatedLogs{
+		Logs: logs,
+		Total: total,
+		Page: lf.Page,
+		Limit: lf.Limit,
+		HasMore: (lf.Page * lf.Limit) < total,
+	}, nil
 }
