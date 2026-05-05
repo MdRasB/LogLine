@@ -7,7 +7,7 @@ import (
 	"github.com/MdRasB/LogLine/internal/model"
 )
 
-func GetLogsQuery(lf model.LogFilter) (string, []interface{}) {
+func GetLogsQuery(lf model.LogFilter) (string, []any) {
 	args := []any{}
 	where := []string{}
 
@@ -54,7 +54,7 @@ func GetLogsQuery(lf model.LogFilter) (string, []interface{}) {
 }
 
 
-func CountLogsQuery(lf model.LogFilter) (string, []interface{}) {
+func CountLogsQuery(lf model.LogFilter) (string, []any) {
 	args := []any{}
 	where := []string{}
 
