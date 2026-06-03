@@ -1,8 +1,14 @@
 package model
 
+import (
+	"time"
+
+	"github.com/google/uuid"
+)
+
 type User struct {
-	Id           uint
+	Id           uuid.UUID
 	Email        string
 	PasswordHash string
-	CreatedAt    string
+	CreatedAt    time.Time
 }
