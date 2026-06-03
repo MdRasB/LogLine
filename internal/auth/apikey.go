@@ -12,17 +12,19 @@ import (
 
 const (
 	APIKeyPrefix = "ll_live_"
-	TestAppend = "ll_live_"
 )
 
-func GenerateAPIKey()(string, error) {
+func GenerateAPIKey()(string, string, error) {
 	key := make([]byte, 32)
 
 	if _, err := rand.Read(key); err != nil {
-		return "", fmt.Errorf("generate api key: %w\n", err)
+		return "", "", fmt.Errorf("generate api key: %w\n", err)
 	}
 
-	return	APIKeyPrefix + hex.EncodeToString(key), nil
+	apiKey := APIKeyPrefix + hex.EncodeToString(key)
+	hkey := HashAPIKey(apiKey)
+
+	return	apiKey, hkey, nil
 }
 
 func HashAPIKey(s string) (string){

@@ -1,0 +1,8 @@
+package model
+
+type User struct {
+	Id           uint
+	Email        string
+	PasswordHash string
+	CreatedAt    string
+}
