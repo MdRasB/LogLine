@@ -100,4 +100,25 @@ func (s *SessionStore) DeleteSession(id uuid.UUID) error {
 	return nil
 }
 
-func (s *SessionStore) DeleteExpiredSessions(){}
+func (s *SessionStore) DeleteExpiredSessions() error {
+	query := `
+			DELETE FROM sessions
+			WHERE expires_at < Now()
+	`
+
+	result, err := s.db.Exec(
+		context.Background(),
+		query,
+	)
+
+	if err != nil {
+		return fmt.Errorf("deleting expired session: %w", err)
+	}
+
+	if result.RowsAffected() == 0 {
+		fmt.Println("%w", ErrSessionNotFound)
+		return nil 
+	}
+
+	return nil 
+}

@@ -20,9 +20,9 @@ func GenerateSessionToken() (string, string, error) {
 	}
 
 	sessionToken := SessionTokenPrefix + hex.EncodeToString(token)
-	htoken := HashSessionToken(sessionToken)
+	hToken := HashSessionToken(sessionToken)
 
-	return sessionToken, htoken, nil
+	return sessionToken, hToken, nil
 }
 
 func HashSessionToken(s string) string {

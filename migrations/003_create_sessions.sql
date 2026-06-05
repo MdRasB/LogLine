@@ -1,5 +1,4 @@
 -- +goose Up
-CREATE EXTENSION IF NOT EXISTS pgcrypto;
 
 CREATE TABLE sessions (
     id          UUID   PRIMARY KEY,

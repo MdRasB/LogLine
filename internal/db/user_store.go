@@ -30,7 +30,7 @@ func (u *UserStore) CreateUser(user model.User) error {
 	_, err := u.db.Exec(
 		context.Background(),
 		query,
-		user.Id,
+		user.ID,
 		user.Email,
 		user.PasswordHash,
 		user.CreatedAt,
@@ -55,7 +55,7 @@ func (u *UserStore) GetUserByEmail(email string) (model.User, error) {
 		context.Background(),
 		query,
 		email,
-	).Scan(&user.Id,
+	).Scan(&user.ID,
 		&user.Email,
 		&user.PasswordHash,
 		&user.CreatedAt)
@@ -80,7 +80,7 @@ func (u *UserStore) GetUserByID(id uuid.UUID) (model.User, error) {
 		context.Background(),
 		query,
 		id,
-	).Scan(&user.Id,
+	).Scan(&user.ID,
 		&user.Email,
 		&user.PasswordHash,
 		&user.CreatedAt)

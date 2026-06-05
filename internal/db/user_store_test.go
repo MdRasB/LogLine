@@ -15,7 +15,7 @@ func TestCreateAndGetUser(t *testing.T) {
 	store := NewUserStore(pool)
 
 	user := model.User{
-		Id:           uuid.New(),
+		ID:           uuid.New(),
 		Email:        "test@example.com",
 		PasswordHash: "hashed-password",
 		CreatedAt:    time.Now(),
@@ -39,16 +39,16 @@ func TestCreateAndGetUser(t *testing.T) {
 		)
 	}
 
-	foundByID, err := store.GetUserByID(user.Id)
+	foundByID, err := store.GetUserByID(user.ID)
 	if err != nil {
 		t.Fatalf("get user by id: %v", err)
 	}
 
-	if foundByID.Id != user.Id {
+	if foundByID.ID != user.ID {
 		t.Fatalf(
 			"expected id %v got %v",
-			user.Id,
-			foundByID.Id,
+			user.ID,
+			foundByID.ID,
 		)
 	}
 }
