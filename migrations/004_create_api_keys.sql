@@ -1,4 +1,6 @@
 -- +goose Up
+CREATE EXTENSION IF NOT EXISTS pgcrypto;
+
 CREATE TABLE api_keys (
     id          UUID        PRIMARY KEY,
     service     TEXT        NOT NULL CHECK (length(service) <= 128),

@@ -2,7 +2,7 @@ package db
 
 import (
 	"context"
-	"errors"
+	//"errors"
 	"fmt"
 
 	"github.com/MdRasB/LogLine/internal/model"
@@ -11,27 +11,23 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
-var (
-	ErrUserNotFound = errors.New("user not found")
-)
-
 type UserStore struct {
 	db *pgxpool.Pool
 }
 
-func NewUserStore(db * pgxpool.Pool) *UserStore {
+func NewUserStore(db *pgxpool.Pool) *UserStore {
 	return &UserStore{
 		db: db,
 	}
 }
 
-func (s *UserStore) CreateUser(user model.User) error {
+func (u *UserStore) CreateUser(user model.User) error {
 	query := `
 			Insert Into users (id, email, password_hash, created_at)
 			Values ($1, $2, $3, $4)
 	`
 
-	_, err := s.db.Exec(
+	_, err := u.db.Exec(
 		context.Background(),
 		query,
 		user.Id,
@@ -47,7 +43,7 @@ func (s *UserStore) CreateUser(user model.User) error {
 	return nil
 }
 
-func (s *UserStore) GetUserByEmail(email string) (model.User, error) {
+func (u *UserStore) GetUserByEmail(email string) (model.User, error) {
 	query := `
 			SELECT id, email, password_hash, created_at
 			FROM users
@@ -55,7 +51,7 @@ func (s *UserStore) GetUserByEmail(email string) (model.User, error) {
 	`
 	var user model.User
 
-	err := s.db.QueryRow(
+	err := u.db.QueryRow(
 		context.Background(),
 		query,
 		email,
@@ -71,7 +67,7 @@ func (s *UserStore) GetUserByEmail(email string) (model.User, error) {
 	return user, nil
 }
 
-func (s *UserStore) GetUserByID(id uuid.UUID) (model.User, error) {
+func (u *UserStore) GetUserByID(id uuid.UUID) (model.User, error) {
 	query := `
 			SELECT id, email, password_hash, created_at
 			FROM users
@@ -80,7 +76,7 @@ func (s *UserStore) GetUserByID(id uuid.UUID) (model.User, error) {
 
 	var user model.User
 
-	err := s.db.QueryRow(
+	err := u.db.QueryRow(
 		context.Background(),
 		query,
 		id,

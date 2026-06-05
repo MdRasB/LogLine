@@ -34,10 +34,10 @@ func HashAPIKey(s string) (string){
 }
 
 func VerifyAPIKey(key, storedHash string) bool {
-	ComputedHash := HashAPIKey(key)
+	computedHash := HashAPIKey(key)
 
 	return subtle.ConstantTimeCompare(
-		[]byte(ComputedHash),
+		[]byte(computedHash),
 		[]byte(storedHash),
 	) == 1
 }
