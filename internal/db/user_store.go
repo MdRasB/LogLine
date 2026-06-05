@@ -2,12 +2,16 @@ package db
 
 import (
 	"context"
+	"errors"
+
 	//"errors"
 	"fmt"
 
 	"github.com/MdRasB/LogLine/internal/model"
 	"github.com/google/uuid"
+
 	//"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
@@ -60,6 +64,10 @@ func (u *UserStore) GetUserByEmail(email string) (model.User, error) {
 		&user.PasswordHash,
 		&user.CreatedAt)
 
+	if errors.Is(err, pgx.ErrNoRows) {
+		return user, ErrUserNotFound
+	}
+
 	if err != nil {
 		return user, fmt.Errorf("getting user by email: %w", err)
 	}
@@ -85,6 +93,9 @@ func (u *UserStore) GetUserByID(id uuid.UUID) (model.User, error) {
 		&user.PasswordHash,
 		&user.CreatedAt)
 
+	if errors.Is(err, pgx.ErrNoRows) {
+		return user, ErrUserNotFound
+	}
 	if err != nil {
 		return user, fmt.Errorf("getting user by id: %w", err)
 	}

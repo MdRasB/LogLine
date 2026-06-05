@@ -106,18 +106,13 @@ func (s *SessionStore) DeleteExpiredSessions() error {
 			WHERE expires_at < Now()
 	`
 
-	result, err := s.db.Exec(
+	_, err := s.db.Exec(
 		context.Background(),
 		query,
 	)
 
 	if err != nil {
 		return fmt.Errorf("deleting expired session: %w", err)
-	}
-
-	if result.RowsAffected() == 0 {
-		fmt.Println("%w", ErrSessionNotFound)
-		return nil 
 	}
 
 	return nil 
