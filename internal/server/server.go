@@ -13,6 +13,8 @@ type Server struct {
 	mux  *http.ServeMux
 	db   *pgxpool.Pool
 	logStore db.DBStore	
+	userStore db.UserStore
+	sessionStore db.SessionStore
 }
 
 func NewServer(addr, dbstore string) *Server {
@@ -24,12 +26,17 @@ func NewServer(addr, dbstore string) *Server {
 	}
 
 	dbStore := db.NewLogStore(pool)
+	usrStore := db.NewUserStore(pool)
+	sessnStore := db.NewSessionStore(pool)
+
 
 	s := &Server{
 		addr: addr,
 		mux:  mux,
 		db:   pool,
 		logStore: *dbStore,
+		userStore: *usrStore,
+		sessionStore: *sessnStore,
 	}
 
 	s.registerRoutes()

@@ -11,7 +11,7 @@ import (
 	"github.com/MdRasB/LogLine/internal/db"
 	"github.com/MdRasB/LogLine/internal/model"
 )
-
+ 
 type IngestHandler struct{
 	store *db.DBStore
 } 
@@ -36,7 +36,7 @@ func (h *IngestHandler) Handle(w http.ResponseWriter, r *http.Request) {
 
 	var log model.Logs
 
-	if err := jsonDecode(r.Body, &log); err != nil {
+	if err := jsonDecodeLog(r.Body, &log); err != nil {
 		http.Error(w, "invalid JSON body", http.StatusBadRequest)
 		return
 	}
@@ -61,7 +61,7 @@ func (h *IngestHandler) Handle(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("Received request:", r.Method)
 }
 
-func jsonDecode(body io.Reader, log *model.Logs) error {
+func jsonDecodeLog(body io.Reader, log *model.Logs) error {
 
 	decoder := json.NewDecoder(body)
 	decoder.DisallowUnknownFields()
