@@ -3,7 +3,8 @@ package handler
 import (
 	"encoding/json"
 	"errors"
-	"strings"
+
+	//"strings"
 
 	//"fmt"
 	"io"
@@ -29,7 +30,7 @@ func (h *AuthHandler) HandleRegister(w http.ResponseWriter, r *http.Request) {
 	r.Body = http.MaxBytesReader(w, r.Body, 1<<20)
 
 	if r.Method != http.MethodPost {
-		writeJSON(w, http.StatusMethodNotAllowed, map[string]string{
+		WriteJSON(w, http.StatusMethodNotAllowed, map[string]string{
 			"error": "method not allowed",
 		})
 		return
@@ -43,8 +44,8 @@ func (h *AuthHandler) HandleRegister(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err := h.authService.Register(req); err != nil {
-		writeJSON(w, http.StatusInternalServerError, map[string]string{
-			"error":"registration failed",
+		WriteJSON(w, http.StatusInternalServerError, map[string]string{
+			"error": "registration failed",
 		})
 		return
 	}
@@ -60,13 +61,13 @@ func (h *AuthHandler) HandleRegister(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *AuthHandler) HandleLogin(w http.ResponseWriter, r *http.Request) {
-	r.Body = http.MaxBytesReader(w, r.Body, 1 << 20)
+	r.Body = http.MaxBytesReader(w, r.Body, 1<<20)
 
 	if r.Method != http.MethodPost {
-		writeJSON(w, http.StatusMethodNotAllowed, map[string]string{
-			"error":"method not allowed",
+		WriteJSON(w, http.StatusMethodNotAllowed, map[string]string{
+			"error": "method not allowed",
 		})
-		return 
+		return
 	}
 
 	var login auth.LoginRequest
@@ -76,58 +77,44 @@ func (h *AuthHandler) HandleLogin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	sessToken, err := h.authService.Login(login) 
+	sessToken, err := h.authService.Login(login)
 	if err != nil {
-		writeJSON(w, http.StatusInternalServerError, map[string]string{
-			"error":"login failed",
-		}) 
+		WriteJSON(w, http.StatusInternalServerError, map[string]string{
+			"error": "login failed",
+		})
+		return
 	}
 
 	response := map[string]string{
-		"session_token" : sessToken,
+		"session_token": sessToken,
 	}
 
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(response)
 }
 
-func (h *AuthHandler) HandleLogout(w http.ResponseWriter, r *http.Request){
-	
+func (h *AuthHandler) HandleLogout(w http.ResponseWriter, r *http.Request) {
+
 	if r.Method != http.MethodPost {
-		writeJSON(w, http.StatusMethodNotAllowed, map[string]string{
-			"error":"method not allowed",
+		WriteJSON(w, http.StatusMethodNotAllowed, map[string]string{
+			"error": "method not allowed",
 		})
-		return 
+		return
 	}
-	
+
 	authHeader := r.Header.Get("Authorization")
-	if authHeader == "" {
-		writeJSON(w, http.StatusUnauthorized, map[string]string{
-			"error": "missing authorization header",
-		})
-		return
-	}
 
-	const prefix = "Bearer "
-
-	if !strings.HasPrefix(authHeader, prefix) {
-		writeJSON(w, http.StatusUnauthorized, map[string]string{
-			"error": "invalid authorization format",
-		})
-		return
-	}
-
-	sessionToken := strings.TrimPrefix(authHeader, prefix)
+	sessionToken := auth.ExtractBearerToken(authHeader)
 
 	if sessionToken == "" {
-		writeJSON(w, http.StatusUnauthorized, map[string]string{
+		WriteJSON(w, http.StatusUnauthorized, map[string]string{
 			"error": "missing session token",
 		})
 		return
 	}
 
 	if err := h.authService.Logout(sessionToken); err != nil {
-		writeJSON(w, http.StatusInternalServerError, map[string]string{
+		WriteJSON(w, http.StatusInternalServerError, map[string]string{
 			"error": "logout failed",
 		})
 		return
@@ -155,5 +142,5 @@ func jsonDecodeLogin(body io.Reader, req *auth.LoginRequest) error {
 		return errors.New("invalid json")
 	}
 
-	return nil 
+	return nil
 }

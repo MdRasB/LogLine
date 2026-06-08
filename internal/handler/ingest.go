@@ -28,7 +28,7 @@ func (h *IngestHandler) Handle(w http.ResponseWriter, r *http.Request) {
 	r.Body = http.MaxBytesReader(w, r.Body, 1<<20)
 
 	if r.Method != http.MethodPost {
-		writeJSON(w, http.StatusMethodNotAllowed, map[string]string{
+		WriteJSON(w, http.StatusMethodNotAllowed, map[string]string{
 			"error": "method not allowed",
 		})
 		return

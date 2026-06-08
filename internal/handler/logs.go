@@ -21,26 +21,26 @@ func NewLogHandler(store *db.DBStore) *LogHandler {
 
 func (h *LogHandler) Handle(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
-		writeJSON(w, http.StatusMethodNotAllowed,
+		WriteJSON(w, http.StatusMethodNotAllowed,
 			map[string]string{"error": "method not allowed"})
 		return
 	}
 
 	pf, err := parseFilter(r)
 	if err != nil {
-		writeJSON(w, http.StatusBadRequest,
+		WriteJSON(w, http.StatusBadRequest,
             map[string]string{"error": err.Error()})
         return
 	}
 
 	result, err := h.store.GetLogs(pf, r.Context())
 	if err != nil {
-        writeJSON(w, http.StatusInternalServerError,
+        WriteJSON(w, http.StatusInternalServerError,
             map[string]string{"error": "failed to retrieve logs"})
         return
     }
 
-	writeJSON(w, http.StatusOK, result)
+	WriteJSON(w, http.StatusOK, result)
 
 }
 
