@@ -2,7 +2,7 @@
 CREATE EXTENSION IF NOT EXISTS pgcrypto;
 
 CREATE TABLE api_keys (
-    id          UUID        PRIMARY KEY,
+    id          UUID        PRIMARY KEY DEFAULT gen_random_uuid(),
     service     TEXT        NOT NULL CHECK (length(service) <= 128),
     key_prefix  TEXT        NOT NULL CHECK (length(key_prefix) = 8),
     key_hash    TEXT        NOT NULL CHECK (length(key_hash) = 64),
