@@ -7,13 +7,6 @@ import (
 	"github.com/MdRasB/LogLine/internal/auth"
 )
 
-type contextKey string
-
-var (
-	UserIDKey    = contextKey("user_id")
-	SessionIDKey = contextKey("session_id")
-)
-
 func AuthMiddleware(
 	authService *auth.Service,
 ) func(http.Handler) http.Handler {
