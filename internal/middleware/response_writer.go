@@ -23,3 +23,9 @@ func (rw *ResponseWriter) WriteHeader(
 
 	rw.ResponseWriter.WriteHeader(statusCode)
 }
+
+func (rw *ResponseWriter) Write(
+	data []byte,
+) (int, error) {
+	return rw.ResponseWriter.Write(data)
+}

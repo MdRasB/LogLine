@@ -2,6 +2,7 @@ package server
 
 import (
 	"log"
+	"log/slog"
 	"net/http"
 
 	"github.com/MdRasB/LogLine/internal/db"
@@ -9,12 +10,13 @@ import (
 )
 
 type Server struct {
-	addr string
-	mux  *http.ServeMux
-	db   *pgxpool.Pool
-	logStore db.DBStore	
-	userStore db.UserStore
+	addr         string
+	mux          *http.ServeMux
+	db           *pgxpool.Pool
+	logStore     db.DBStore
+	userStore    db.UserStore
 	sessionStore db.SessionStore
+	logger       *slog.Logger
 }
 
 func NewServer(addr, dbstore string) *Server {
@@ -28,15 +30,16 @@ func NewServer(addr, dbstore string) *Server {
 	dbStore := db.NewLogStore(pool)
 	usrStore := db.NewUserStore(pool)
 	sessnStore := db.NewSessionStore(pool)
-
+	logger := slog.New(slog.NewTextHandler(log.Writer(), nil))
 
 	s := &Server{
-		addr: addr,
-		mux:  mux,
-		db:   pool,
-		logStore: *dbStore,
-		userStore: *usrStore,
+		addr:         addr,
+		mux:          mux,
+		db:           pool,
+		logStore:     *dbStore,
+		userStore:    *usrStore,
 		sessionStore: *sessnStore,
+		logger:       logger,
 	}
 
 	s.registerRoutes()
