@@ -36,4 +36,4 @@ check:
 	golangci-lint run -v
 
 compile:
-	go build ./..
+	go build ./...
