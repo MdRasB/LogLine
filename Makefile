@@ -31,3 +31,9 @@ db-run:
 
 test:
 	go test ./...
+
+check:
+	golangci-lint run -v
+
+compile:
+	go build ./..
