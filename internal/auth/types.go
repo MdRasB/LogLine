@@ -1,3 +1,4 @@
+// Package auth handles the authentication of the servers.
 package auth
 
 import (

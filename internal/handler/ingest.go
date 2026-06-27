@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+
 	//"time"
 
 	"github.com/MdRasB/LogLine/internal/db"
@@ -22,9 +23,7 @@ func NewIngestHandler(store *db.DBStore) *IngestHandler {
 	}
 }
 
-// func HandleIngest(w http.ResponseWriter, r *http.Request) {
 func (h *IngestHandler) Handle(w http.ResponseWriter, r *http.Request) {
-
 	r.Body = http.MaxBytesReader(w, r.Body, 1<<20)
 
 	if r.Method != http.MethodPost {
@@ -66,7 +65,6 @@ func (h *IngestHandler) Handle(w http.ResponseWriter, r *http.Request) {
 }
 
 func jsonDecodeLog(body io.Reader, log *model.Logs) error {
-
 	decoder := json.NewDecoder(body)
 	decoder.DisallowUnknownFields()
 	if err := decoder.Decode(&log); err != nil {
@@ -75,5 +73,4 @@ func jsonDecodeLog(body io.Reader, log *model.Logs) error {
 	}
 
 	return nil
-
 }

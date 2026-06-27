@@ -1,3 +1,4 @@
+// Package config creates the server's configuration for http ports and databse ports
 package config
 
 import (
@@ -21,7 +22,7 @@ func Load() *Config {
 
 	cfg := &Config{
 		Port:  getEnv("PORT", ":8080"),
-		DBURL: getEnv("DB_URL", ""), 
+		DBURL: getEnv("DB_URL", ""),
 	}
 
 	if cfg.DBURL == "" {

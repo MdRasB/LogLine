@@ -1,3 +1,4 @@
+// Package handler package handle the route's inner works
 package handler
 
 import (
@@ -26,7 +27,6 @@ func NewAuthHandler(service *auth.Service) *AuthHandler {
 }
 
 func (h *AuthHandler) HandleRegister(w http.ResponseWriter, r *http.Request) {
-
 	r.Body = http.MaxBytesReader(w, r.Body, 1<<20)
 
 	if r.Method != http.MethodPost {
@@ -102,7 +102,6 @@ func (h *AuthHandler) HandleLogin(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *AuthHandler) HandleLogout(w http.ResponseWriter, r *http.Request) {
-
 	if r.Method != http.MethodPost {
 		WriteJSON(w, http.StatusMethodNotAllowed, map[string]string{
 			"error": "method not allowed",

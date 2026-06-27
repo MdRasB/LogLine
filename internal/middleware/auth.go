@@ -1,3 +1,4 @@
+// Package middleware handle the middleware logics for the routes and servers
 package middleware
 
 import (
@@ -10,11 +11,8 @@ import (
 func AuthMiddleware(
 	authService *auth.Service,
 ) func(http.Handler) http.Handler {
-
 	return func(next http.Handler) http.Handler {
-
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-
 			authHeader := r.Header.Get("Authorization")
 
 			sessiontoken := auth.ExtractBearerToken(authHeader)
@@ -47,7 +45,6 @@ func AuthMiddleware(
 
 			r = r.WithContext(ctx)
 
-
 			next.ServeHTTP(w, r)
 		})
 	}
@@ -60,5 +57,5 @@ func GetUserID(ctx context.Context) (string, bool) {
 
 func GetSessionID(ctx context.Context) (string, bool) {
 	SessionID, ok := ctx.Value(SessionIDKey).(string)
-	return SessionID, ok 
+	return SessionID, ok
 }
