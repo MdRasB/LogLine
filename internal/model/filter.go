@@ -13,19 +13,19 @@ type LogFilter struct {
 }
 
 type LogEntry struct {
-	ID string
+	ID        string
 	Level     string
 	Message   string
 	Service   string
 	Timestamp time.Time
-	Metadata  map[string]interface{}
+	Metadata  map[string]any
 	CreatedAt time.Time
 }
 
 type PaginatedLogs struct {
-	Logs	   []LogEntry
+	Logs    []LogEntry
 	Total   int
 	Page    int
-	Limit   int	
-	HasMore  bool
+	Limit   int
+	HasMore bool
 }

@@ -1,3 +1,4 @@
+// Package server handle this project's servers and routes
 package server
 
 import (
@@ -9,73 +10,93 @@ import (
 )
 
 func (s *Server) registerRoutes() {
-
 	authService := auth.NewService(
 		&s.userStore,
 		&s.sessionStore,
 	)
 
+	rateLimiter := middleware.NewRateLimiter(
+		5,  // request per second
+		10, // burst
+
+	)
+
+	// Middleware Variables
 	authMiddleware := middleware.AuthMiddleware(authService)
 	loggingMiddleware := middleware.Logging(s.logger)
+	recoveryMiddleware := middleware.Recovery(s.logger)
 
 	ingestHandler := handler.NewIngestHandler(&s.logStore)
 	logHandler := handler.NewLogHandler(&s.logStore)
 	authHandler := handler.NewAuthHandler(authService)
 
-	//public routes:
-	//s.mux.HandleFunc("/health", handler.HandleHealth)
-	s.mux.Handle("/health",
+	// public routes:
+	s.mux.Handle(
+		"/health",
 		middleware.Chain(
 			http.HandlerFunc(handler.HandleHealth),
 			middleware.RequestID,
+			recoveryMiddleware,
 			loggingMiddleware,
+			rateLimiter.Middleware,
 		),
 	)
 
-	//s.mux.HandleFunc("/auth/register", authHandler.HandleRegister)
-	s.mux.Handle("/auth/register",
+	s.mux.Handle(
+		"/auth/register",
 		middleware.Chain(
 			http.HandlerFunc(authHandler.HandleRegister),
 			middleware.RequestID,
+			recoveryMiddleware,
 			loggingMiddleware,
+			rateLimiter.Middleware,
 		),
 	)
 
-	//s.mux.HandleFunc("/auth/login", authHandler.HandleLogin)
-	s.mux.Handle("/auth/login",
+	s.mux.Handle(
+		"/auth/login",
 		middleware.Chain(
 			http.HandlerFunc(authHandler.HandleLogin),
 			middleware.RequestID,
+			recoveryMiddleware,
 			loggingMiddleware,
+			rateLimiter.Middleware,
 		),
 	)
 
-	//protected routes:
-	//s.mux.HandleFunc("/ingest", ingestHandler.Handle)
-	s.mux.Handle("/ingest",
+	// protected routes:
+	s.mux.Handle(
+		"/ingest",
 		middleware.Chain(
 			http.HandlerFunc(ingestHandler.Handle),
 			middleware.RequestID,
+			recoveryMiddleware,
 			loggingMiddleware,
+			rateLimiter.Middleware,
 			authMiddleware,
 		),
 	)
 
-	//s.mux.HandleFunc("/logs", logHandler.Handle)
-	s.mux.Handle("/logs",
+	s.mux.Handle(
+		"/logs",
 		middleware.Chain(
 			http.HandlerFunc(logHandler.Handle),
 			middleware.RequestID,
+			recoveryMiddleware,
 			loggingMiddleware,
+			rateLimiter.Middleware,
 			authMiddleware,
-		),	
+		),
 	)
-	//s.mux.HandleFunc("/auth/logout", authHandler.HandleLogout)
-	s.mux.Handle("/auth/logout",
+
+	s.mux.Handle(
+		"/auth/logout",
 		middleware.Chain(
 			http.HandlerFunc(authHandler.HandleLogout),
 			middleware.RequestID,
+			recoveryMiddleware,
 			loggingMiddleware,
+			rateLimiter.Middleware,
 			authMiddleware,
 		),
 	)

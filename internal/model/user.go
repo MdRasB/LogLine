@@ -1,3 +1,4 @@
+// Package model holds all the intenal schema for struct and tables
 package model
 
 import (
