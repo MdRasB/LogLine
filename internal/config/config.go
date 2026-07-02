@@ -2,27 +2,51 @@
 package config
 
 import (
-	"fmt"
 	"log"
 	"os"
+	"strconv"
 
 	"github.com/joho/godotenv"
 )
 
 type Config struct {
-	Port  string
-	DBURL string
+	Port      string
+	DBURL     string
+	ReqPerSec float64
+	Burst     int
 }
 
 func Load() *Config {
 	err := godotenv.Load()
 	if err != nil {
-		log.Println(".env file not found (this is OK if running in production)")
+		log.Println(".env file not found")
+	}
+
+	reqPerSec := getEnv("REQLIMIT", "5")
+	burst := getEnv("BURST", "10")
+
+	Port := getEnv("PORT", ":8079")
+	DBURL := getEnv("DB_URL", "")
+
+	ReqPerSec, err := strconv.ParseFloat(reqPerSec, 64)
+	if err != nil {
+		log.Fatalf("Failed to convert string: %v", err)
+	}
+
+	Burst, err := strconv.Atoi(burst)
+	if err != nil {
+		log.Fatalf("Failed to convert string: %v", err)
+	}
+
+	if Burst < 0 || ReqPerSec < 0 {
+		log.Fatalf("Invalid rate limit. Must be greater or equal to 0.")
 	}
 
 	cfg := &Config{
-		Port:  getEnv("PORT", ":8080"),
-		DBURL: getEnv("DB_URL", ""),
+		Port:      Port,
+		DBURL:     DBURL,
+		ReqPerSec: ReqPerSec,
+		Burst:     Burst,
 	}
 
 	if cfg.DBURL == "" {
@@ -34,10 +58,8 @@ func Load() *Config {
 
 func getEnv(key, fallback string) string {
 	if val := os.Getenv(key); val != "" {
-		fmt.Printf("Port is being used: %v\n", val)
 		return val
 	}
 
-	fmt.Printf("fallback value is being used...%v\n", fallback)
 	return fallback
 }

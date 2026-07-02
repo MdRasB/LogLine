@@ -14,8 +14,10 @@ func main() {
 	cfg := config.Load()
 	port := cfg.Port
 	dbStr := cfg.DBURL
-	
-	srv := server.NewServer(port, dbStr)
+	reqPrSec := cfg.ReqPerSec
+	burst := cfg.Burst
+
+	srv := server.NewServer(port, dbStr, reqPrSec, burst)
 	fmt.Printf("Starting the server on %v\n", port)
 
 	err := srv.Start()
