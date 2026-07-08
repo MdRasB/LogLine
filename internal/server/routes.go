@@ -8,79 +8,80 @@ import (
 	"github.com/MdRasB/LogLine/internal/middleware"
 )
 
-func (s *Server) registerRoutes() {
-	ingestHandler := handler.NewIngestHandler(&s.logStore)
-	logHandler := handler.NewLogHandler(&s.logStore)
+func (s *Server) registerPublicRoutes() {
 	authHandler := handler.NewAuthHandler(s.authService)
 
-	// public routes:
 	s.mux.Handle(
 		"/health",
-		middleware.Chain(
+		s.publicChain(
 			http.HandlerFunc(handler.HandleHealth),
-			middleware.RequestID,
-			s.recoveryMiddleware,
-			s.loggingMiddleware,
-			s.ratelimiter.Middleware,
 		),
 	)
 
 	s.mux.Handle(
 		"/auth/register",
-		middleware.Chain(
+		s.publicChain(
 			http.HandlerFunc(authHandler.HandleRegister),
-			middleware.RequestID,
-			s.recoveryMiddleware,
-			s.loggingMiddleware,
-			s.ratelimiter.Middleware,
 		),
 	)
 
 	s.mux.Handle(
 		"/auth/login",
-		middleware.Chain(
+		s.publicChain(
 			http.HandlerFunc(authHandler.HandleLogin),
-			middleware.RequestID,
-			s.recoveryMiddleware,
-			s.loggingMiddleware,
-			s.ratelimiter.Middleware,
 		),
 	)
+}
 
-	// protected routes:
+func (s *Server) registerProtectedRoutes() {
+	ingestHandler := handler.NewIngestHandler(&s.logStore)
+	logHandler := handler.NewLogHandler(&s.logStore)
+	authHandler := handler.NewAuthHandler(s.authService)
+
 	s.mux.Handle(
 		"/ingest",
-		middleware.Chain(
+		s.protectedChain(
 			http.HandlerFunc(ingestHandler.Handle),
-			middleware.RequestID,
-			s.recoveryMiddleware,
-			s.loggingMiddleware,
-			s.ratelimiter.Middleware,
-			s.authMiddleware,
 		),
 	)
 
 	s.mux.Handle(
 		"/logs",
-		middleware.Chain(
+		s.protectedChain(
 			http.HandlerFunc(logHandler.Handle),
-			middleware.RequestID,
-			s.recoveryMiddleware,
-			s.loggingMiddleware,
-			s.ratelimiter.Middleware,
-			s.authMiddleware,
 		),
 	)
 
 	s.mux.Handle(
 		"/auth/logout",
-		middleware.Chain(
+		s.protectedChain(
 			http.HandlerFunc(authHandler.HandleLogout),
-			middleware.RequestID,
-			s.recoveryMiddleware,
-			s.loggingMiddleware,
-			s.ratelimiter.Middleware,
-			s.authMiddleware,
 		),
 	)
+}
+
+func (s *Server) publicChain(h http.Handler) http.Handler {
+	return middleware.Chain(
+		h,
+		middleware.RequestID,
+		s.recoveryMiddleware,
+		s.loggingMiddleware,
+		s.ratelimiter.Middleware,
+	)
+}
+
+func (s *Server) protectedChain(h http.Handler) http.Handler {
+	return middleware.Chain(
+		h,
+		middleware.RequestID,
+		s.recoveryMiddleware,
+		s.loggingMiddleware,
+		s.ratelimiter.Middleware,
+		s.authMiddleware,
+	)
+}
+
+func (s *Server) registerRoutes() {
+	s.registerPublicRoutes()
+	s.registerProtectedRoutes()
 }
