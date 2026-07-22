@@ -1,0 +1,87 @@
+{{define "filters"}}
+
+<section class="filters">
+
+    <h2>Filters</h2>
+
+    <form
+        method="GET"
+        action="/dashboard">
+
+        <div class="filter-row">
+
+            <div class="filter-item">
+
+                <label for="level">
+                    Level
+                </label>
+
+                <select
+                    id="level"
+                    name="level">
+
+                    <option value="">
+                        All
+                    </option>
+
+                    <option value="INFO">
+                        INFO
+                    </option>
+
+                    <option value="WARN">
+                        WARN
+                    </option>
+
+                    <option value="ERROR">
+                        ERROR
+                    </option>
+
+                    <option value="DEBUG">
+                        DEBUG
+                    </option>
+
+                </select>
+
+            </div>
+
+            <div class="filter-item">
+
+                <label for="service">
+                    Service
+                </label>
+
+                <input
+                    id="service"
+                    type="text"
+                    name="service"
+                    placeholder="Service name">
+
+            </div>
+
+            <div class="filter-item">
+
+                <label for="search">
+                    Search
+                </label>
+
+                <input
+                    id="search"
+                    type="text"
+                    name="search"
+                    placeholder="Search message">
+
+            </div>
+
+        </div>
+
+        <button type="submit">
+
+            Apply Filters
+
+        </button>
+
+    </form>
+
+</section>
+
+{{end}}

@@ -8,6 +8,7 @@ import (
 	"github.com/MdRasB/LogLine/internal/auth"
 	"github.com/MdRasB/LogLine/internal/db"
 	"github.com/MdRasB/LogLine/internal/middleware"
+	"github.com/MdRasB/LogLine/internal/web"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
@@ -20,6 +21,8 @@ type Server struct {
 	sessionStore db.SessionStore
 	logger       *slog.Logger
 	authService  *auth.Service
+
+	templates *web.TemplateManager
 
 	authMiddleware     middleware.Middleware
 	loggingMiddleware  middleware.Middleware
@@ -51,6 +54,11 @@ func NewServer(addr, dbstore string, requestPerSecond float64, burst int) *Serve
 
 	)
 
+	templates, err := web.NewTemplateManager()
+	if err != nil {
+		log.Fatalf("failed to initialize template manager: %v", err)
+	}
+
 	// Middleware Variables
 	authMiddleware := middleware.AuthMiddleware(authService)
 	loggingMiddleware := middleware.Logging(logger)
@@ -65,6 +73,7 @@ func NewServer(addr, dbstore string, requestPerSecond float64, burst int) *Serve
 		sessionStore:       *sessnStore,
 		logger:             logger,
 		authService:        authService,
+		templates:          templates,
 		authMiddleware:     authMiddleware,
 		loggingMiddleware:  loggingMiddleware,
 		recoveryMiddleware: recoveryMiddleware,

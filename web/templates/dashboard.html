@@ -1,0 +1,21 @@
+{{define "dashboard.html"}}
+    {{template "base" .}}
+{{end}}
+
+{{define "content"}}
+
+    {{template "navbar" .}}
+
+    {{template "header" .}}
+
+    {{template "filters" .}}
+
+    {{template "stats" .}}
+
+    {{template "log_table" .}}
+
+    {{template "pagination" .}}
+
+    {{template "footer" .}}
+
+{{end}}

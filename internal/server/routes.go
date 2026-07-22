@@ -11,6 +11,18 @@ import (
 func (s *Server) registerPublicRoutes() {
 	authHandler := handler.NewAuthHandler(s.authService)
 
+	dashboardHandler := handler.NewDashboardHandler(
+		&s.logStore,
+		s.templates,
+	)
+
+	s.mux.Handle(
+		"/dashboard",
+		s.publicChain(
+			http.HandlerFunc(dashboardHandler.Dashboard),
+		),
+	)
+
 	s.mux.Handle(
 		"/health",
 		s.publicChain(
@@ -60,6 +72,20 @@ func (s *Server) registerProtectedRoutes() {
 	)
 }
 
+func (s *Server) registerStaticRoutes() {
+	staticFS := http.FileServer(
+		http.Dir("web/static"),
+	)
+
+	s.mux.Handle(
+		"/static/",
+		http.StripPrefix(
+			"/static/",
+			staticFS,
+		),
+	)
+}
+
 func (s *Server) publicChain(h http.Handler) http.Handler {
 	return middleware.Chain(
 		h,
@@ -82,6 +108,8 @@ func (s *Server) protectedChain(h http.Handler) http.Handler {
 }
 
 func (s *Server) registerRoutes() {
+	s.registerStaticRoutes()
+
 	s.registerPublicRoutes()
 	s.registerProtectedRoutes()
 }
