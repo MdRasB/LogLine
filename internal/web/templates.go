@@ -4,6 +4,7 @@ package web
 import (
 	"html/template"
 	"net/http"
+	"time"
 )
 
 type TemplateManager struct {
@@ -11,7 +12,17 @@ type TemplateManager struct {
 }
 
 func NewTemplateManager() (*TemplateManager, error) {
-	tmpl, err := template.ParseGlob("web/templates/*.html")
+	funcMap := template.FuncMap{
+		"add":        add,
+		"sub":        sub,
+		"formatTime": formatTime,
+	}
+
+	tmpl := template.New("").Funcs(funcMap)
+
+	var err error
+
+	tmpl, err = tmpl.ParseGlob("web/templates/*.html")
 	if err != nil {
 		return nil, err
 	}
@@ -26,14 +37,27 @@ func NewTemplateManager() (*TemplateManager, error) {
 	}, nil
 }
 
-func (tm *TemplateManager) Render(
-	w http.ResponseWriter,
-	name string,
-	data any,
-) error {
+func (tm *TemplateManager) Render(w http.ResponseWriter, name string, data any) error {
 	return tm.templates.ExecuteTemplate(
 		w,
 		name,
 		data,
 	)
+}
+
+func add(a, b int) int {
+	return a + b
+}
+
+func sub(a, b int) int {
+	return a - b
+}
+
+func formatTime(t string) string {
+	parsed, err := time.Parse(time.RFC3339, t)
+	if err != nil {
+		return t
+	}
+
+	return parsed.Format("02 Jan 2006 15:04:05")
 }

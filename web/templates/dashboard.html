@@ -4,18 +4,30 @@
 
 {{define "content"}}
 
+<div class="dashboard">
+
     {{template "navbar" .}}
 
-    {{template "header" .}}
+    <main class="dashboard-main">
 
-    {{template "filters" .}}
+        <div class="container">
 
-    {{template "stats" .}}
+            {{template "header" .}}
 
-    {{template "log_table" .}}
+            {{template "filters" .}}
 
-    {{template "pagination" .}}
+            {{template "stats" .}}
+
+            {{template "log_table" .}}
+
+            {{template "pagination" .}}
+
+        </div>
+
+    </main>
 
     {{template "footer" .}}
+
+</div>
 
 {{end}}

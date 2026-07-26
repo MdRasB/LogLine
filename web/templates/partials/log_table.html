@@ -2,41 +2,79 @@
 
 <section class="logs">
 
-    <h2>Logs</h2>
+    <div class="section-header">
 
-    <table>
+        <h2>Logs</h2>
 
-        <thead>
+    </div>
 
-            <tr>
+    <div class="table-card">
 
-                <th>Timestamp</th>
+        <table class="logs-table">
 
-                <th>Level</th>
+            <thead>
 
-                <th>Service</th>
+                <tr>
 
-                <th>Message</th>
+                    <th>Timestamp</th>
 
-            </tr>
+                    <th>Level</th>
 
-        </thead>
+                    <th>Service</th>
 
-        <tbody>
+                    <th>Message</th>
 
-            <tr>
+                </tr>
 
-                <td colspan="4">
+            </thead>
 
-                    No logs available.
+            <tbody>
 
-                </td>
+                {{if .Logs}}
 
-            </tr>
+                    {{range .Logs}}
 
-        </tbody>
+                    <tr>
 
-    </table>
+                        <td>{{.Timestamp}}</td>
+
+                        <td>
+
+                            <span class="log-level log-level-{{.Level}}">
+                                {{.Level}}
+                            </span>
+
+                        </td>
+
+                        <td>{{.Service}}</td>
+
+                        <td>{{.Message}}</td>
+
+                    </tr>
+
+                    {{end}}
+
+                {{else}}
+
+                    <tr>
+
+                        <td
+                            colspan="4"
+                            class="empty-table">
+
+                            No logs available.
+
+                        </td>
+
+                    </tr>
+
+                {{end}}
+
+            </tbody>
+
+        </table>
+
+    </div>
 
 </section>
 

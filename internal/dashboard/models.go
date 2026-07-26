@@ -1,10 +1,11 @@
-// Package dashboard is the module for dashboard html (webpage interface)
+// Package dashboard contains models used by the HTML dashboard.
 package dashboard
 
 import "github.com/MdRasB/LogLine/internal/model"
 
 type DashboardData struct {
-	Logs       []model.Logs
+	Logs       []model.LogEntry
+	Stats      DashboardStats
 	Filters    DashboardFilters
 	Pagination PaginationData
 }
@@ -23,6 +24,10 @@ type PaginationData struct {
 }
 
 type DashboardStats struct {
+	TotalLogs     int
+	TotalServices int
+	ErrorLogs     int
+
 	Volume   []HourlyStat
 	Levels   []LevelStat
 	Services []ServiceStat

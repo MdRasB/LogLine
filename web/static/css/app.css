@@ -1,3 +1,798 @@
-body {
-    background: #fafafa;
+/* ==========================================================
+   LOGLINE DASHBOARD
+   PART 1
+   Reset • Variables • Typography • Layout
+========================================================== */
+
+/* ==========================================================
+   RESET
+========================================================== */
+
+*,
+*::before,
+*::after{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+html{
+    font-size:16px;
+    scroll-behavior:smooth;
+}
+
+body{
+    font-family:
+        Inter,
+        system-ui,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        sans-serif;
+
+    line-height:1.6;
+
+    background:#f5f7fb;
+
+    color:#111827;
+
+    min-height:100vh;
+}
+
+img{
+    max-width:100%;
+    display:block;
+}
+
+button,
+input,
+select{
+    font:inherit;
+}
+
+a{
+    text-decoration:none;
+    color:inherit;
+}
+
+table{
+    width:100%;
+    border-collapse:collapse;
+}
+
+/* ==========================================================
+   VARIABLES
+========================================================== */
+
+:root{
+
+    --bg:#f5f7fb;
+
+    --surface:#ffffff;
+
+    --surface-2:#f8fafc;
+
+    --border:#e5e7eb;
+
+    --primary:#2563eb;
+
+    --primary-dark:#1d4ed8;
+
+    --text:#111827;
+
+    --muted:#6b7280;
+
+    --success:#22c55e;
+
+    --warning:#f59e0b;
+
+    --danger:#ef4444;
+
+    --radius:12px;
+
+    --shadow:
+        0 4px 12px rgba(0,0,0,.06);
+
+    --transition:
+        .2s ease;
+}
+
+/* ==========================================================
+   TYPOGRAPHY
+========================================================== */
+
+h1{
+    font-size:2rem;
+    font-weight:700;
+}
+
+h2{
+    font-size:1.5rem;
+    font-weight:700;
+}
+
+h3{
+    font-size:1.1rem;
+}
+
+p{
+    color:var(--muted);
+}
+
+.section-header{
+    margin-bottom:1rem;
+}
+
+/* ==========================================================
+   APP LAYOUT
+========================================================== */
+
+.app{
+
+    min-height:100vh;
+
+    display:flex;
+
+    flex-direction:column;
+}
+
+.dashboard{
+
+    display:flex;
+
+    flex-direction:column;
+
+    min-height:100vh;
+}
+
+.dashboard-main{
+
+    flex:1;
+
+    padding:2rem 0;
+}
+
+.container{
+
+    width:min(1300px,92%);
+
+    margin:auto;
+}
+
+/* ==========================================================
+   NAVBAR
+========================================================== */
+
+.navbar{
+
+    background:white;
+
+    border-bottom:1px solid var(--border);
+
+    position:sticky;
+
+    top:0;
+
+    z-index:100;
+}
+
+.navbar-content{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    height:72px;
+}
+
+.navbar-brand{
+
+    font-size:1.4rem;
+
+    font-weight:700;
+
+    color:var(--primary);
+}
+
+.navbar-links{
+
+    display:flex;
+
+    gap:1rem;
+}
+
+.navbar-links a{
+
+    padding:.6rem 1rem;
+
+    border-radius:8px;
+
+    transition:var(--transition);
+}
+
+.navbar-links a:hover{
+
+    background:var(--surface-2);
+
+    color:var(--primary);
+}
+
+/* ==========================================================
+   PAGE HEADER
+========================================================== */
+
+.page-header{
+
+    margin-bottom:2rem;
+}
+
+.page-title p{
+
+    margin-top:.5rem;
+}
+
+/* ==========================================================
+   BUTTONS
+========================================================== */
+
+.btn{
+
+    display:inline-flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    gap:.5rem;
+
+    border:none;
+
+    border-radius:10px;
+
+    padding:.8rem 1.2rem;
+
+    cursor:pointer;
+
+    transition:var(--transition);
+
+    font-weight:600;
+}
+
+.btn-primary{
+
+    background:var(--primary);
+
+    color:white;
+}
+
+.btn-primary:hover{
+
+    background:var(--primary-dark);
+}
+
+.btn-secondary{
+
+    background:white;
+
+    border:1px solid var(--border);
+}
+
+.btn-secondary:hover{
+
+    background:var(--surface-2);
+}
+
+/* ==========================================================
+   FORM
+========================================================== */
+
+.filter-form{
+
+    display:grid;
+
+    grid-template-columns:
+        repeat(
+            auto-fit,
+            minmax(220px,1fr)
+        );
+
+    gap:1rem;
+}
+
+.filter-group{
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:.45rem;
+}
+
+.filter-group label{
+
+    font-size:.9rem;
+
+    font-weight:600;
+}
+
+.filter-group input,
+.filter-group select{
+
+    border:1px solid var(--border);
+
+    border-radius:10px;
+
+    padding:.8rem 1rem;
+
+    background:white;
+
+    transition:var(--transition);
+}
+
+.filter-group input:focus,
+.filter-group select:focus{
+
+    outline:none;
+
+    border-color:var(--primary);
+
+    box-shadow:
+        0 0 0 3px
+        rgba(37,99,235,.15);
+}
+
+.filter-actions{
+
+    display:flex;
+
+    align-items:flex-end;
+
+    gap:.75rem;
+}
+
+/* ==========================================================
+   LOGLINE DASHBOARD
+   PART 2
+   Cards • Filters • Stats • Utilities
+========================================================== */
+
+
+/* ==========================================================
+   CARDS
+========================================================== */
+
+.card,
+.table-card{
+
+    background:var(--surface);
+
+    border:1px solid var(--border);
+
+    border-radius:var(--radius);
+
+    box-shadow:var(--shadow);
+
+    padding:1.5rem;
+
+    margin-bottom:2rem;
+}
+
+
+/* ==========================================================
+   FILTER SECTION
+========================================================== */
+
+.filters{
+
+    margin-bottom:2rem;
+}
+
+.filter-form{
+
+    align-items:end;
+}
+
+.filter-group input::placeholder{
+
+    color:#9ca3af;
+}
+
+.filter-actions{
+
+    display:flex;
+
+    gap:.75rem;
+
+    flex-wrap:wrap;
+}
+
+
+/* ==========================================================
+   STATS
+========================================================== */
+
+.stats{
+
+    margin-bottom:2rem;
+}
+
+.stats-grid{
+
+    display:grid;
+
+    grid-template-columns:
+        repeat(
+            auto-fit,
+            minmax(220px,1fr)
+        );
+
+    gap:1.25rem;
+}
+
+.stat-card{
+
+    background:white;
+
+    border:1px solid var(--border);
+
+    border-radius:var(--radius);
+
+    padding:1.5rem;
+
+    box-shadow:var(--shadow);
+
+    transition:var(--transition);
+}
+
+.stat-card:hover{
+
+    transform:translateY(-3px);
+
+    box-shadow:
+        0 10px 25px rgba(0,0,0,.08);
+}
+
+.stat-title{
+
+    display:block;
+
+    font-size:.9rem;
+
+    color:var(--muted);
+
+    margin-bottom:.75rem;
+
+    font-weight:600;
+}
+
+.stat-value{
+
+    display:block;
+
+    font-size:2rem;
+
+    font-weight:700;
+
+    color:var(--text);
+}
+
+
+/* ==========================================================
+   SECTION SPACING
+========================================================== */
+
+.logs{
+
+    margin-bottom:2rem;
+}
+
+.pagination{
+
+    margin-bottom:2rem;
+}
+
+.footer{
+
+    margin-top:3rem;
+}
+
+
+/* ==========================================================
+   UTILITIES
+========================================================== */
+
+.text-center{
+
+    text-align:center;
+}
+
+.text-muted{
+
+    color:var(--muted);
+}
+
+.mt-1{
+
+    margin-top:1rem;
+}
+
+.mt-2{
+
+    margin-top:2rem;
+}
+
+.mb-1{
+
+    margin-bottom:1rem;
+}
+
+.mb-2{
+
+    margin-bottom:2rem;
+}
+
+
+/* ==========================================================
+   LOGLINE DASHBOARD
+   PART 3
+   Table • Badges • Pagination • Footer • Responsive
+========================================================== */
+
+
+/* ==========================================================
+   TABLE
+========================================================== */
+
+.logs-table{
+
+    width:100%;
+
+    border-collapse:collapse;
+}
+
+.logs-table thead{
+
+    background:var(--surface-2);
+}
+
+.logs-table th{
+
+    text-align:left;
+
+    padding:1rem;
+
+    font-size:.9rem;
+
+    color:var(--muted);
+
+    border-bottom:1px solid var(--border);
+}
+
+.logs-table td{
+
+    padding:1rem;
+
+    border-bottom:1px solid var(--border);
+
+    vertical-align:middle;
+}
+
+.logs-table tbody tr{
+
+    transition:var(--transition);
+}
+
+.logs-table tbody tr:hover{
+
+    background:#f8fafc;
+}
+
+.logs-table tbody tr:last-child td{
+
+    border-bottom:none;
+}
+
+
+/* ==========================================================
+   LOG LEVEL BADGES
+========================================================== */
+
+.log-level{
+
+    display:inline-flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    min-width:72px;
+
+    padding:.35rem .75rem;
+
+    border-radius:999px;
+
+    font-size:.8rem;
+
+    font-weight:700;
+
+    text-transform:uppercase;
+
+    letter-spacing:.04em;
+}
+
+.log-level-debug{
+
+    background:#e5e7eb;
+
+    color:#374151;
+}
+
+.log-level-info{
+
+    background:#dbeafe;
+
+    color:#1d4ed8;
+}
+
+.log-level-warn{
+
+    background:#fef3c7;
+
+    color:#b45309;
+}
+
+.log-level-error{
+
+    background:#fee2e2;
+
+    color:#dc2626;
+}
+
+.log-level-fatal{
+
+    background:#7f1d1d;
+
+    color:white;
+}
+
+
+/* ==========================================================
+   EMPTY TABLE
+========================================================== */
+
+.empty-table{
+
+    text-align:center;
+
+    padding:3rem;
+
+    color:var(--muted);
+
+    font-style:italic;
+}
+
+
+/* ==========================================================
+   PAGINATION
+========================================================== */
+
+.pagination{
+
+    display:flex;
+
+    justify-content:center;
+}
+
+.pagination-content{
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:space-between;
+
+    gap:2rem;
+
+    width:100%;
+}
+
+.pagination-center{
+
+    font-weight:600;
+}
+
+
+/* ==========================================================
+   FOOTER
+========================================================== */
+
+.footer{
+
+    margin-top:4rem;
+
+    border-top:1px solid var(--border);
+
+    background:white;
+
+    padding:1.5rem 0;
+}
+
+.footer p{
+
+    width:min(1300px,92%);
+
+    margin:auto;
+
+    color:var(--muted);
+}
+
+
+/* ==========================================================
+   RESPONSIVE
+========================================================== */
+
+@media (max-width:900px){
+
+    .navbar-content{
+
+        flex-direction:column;
+
+        height:auto;
+
+        padding:1rem 0;
+
+        gap:1rem;
+    }
+
+    .filter-form{
+
+        grid-template-columns:1fr;
+    }
+
+    .pagination-content{
+
+        flex-direction:column;
+
+        gap:1rem;
+    }
+
+    .table-card{
+
+        overflow-x:auto;
+    }
+
+    .logs-table{
+
+        min-width:700px;
+    }
+}
+
+@media (max-width:600px){
+
+    .dashboard-main{
+
+        padding:1.5rem 0;
+    }
+
+    h1{
+
+        font-size:1.6rem;
+    }
+
+    .stats-grid{
+
+        grid-template-columns:1fr;
+    }
+
+    .filter-actions{
+
+        flex-direction:column;
+    }
+
+    .filter-actions .btn{
+
+        width:100%;
+    }
 }

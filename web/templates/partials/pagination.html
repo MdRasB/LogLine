@@ -1,27 +1,62 @@
 {{define "pagination"}}
 
-<section class="pagination">
+{{if gt .Pagination.TotalPages 1}}
 
-    <button
-        disabled>
+<nav class="pagination">
 
-        Previous
+    <div class="pagination-content">
 
-    </button>
+        <div class="pagination-left">
 
-    <span>
+            {{if .Pagination.HasPrev}}
 
-        Page 1 of 1
+                <a
+                    class="btn btn-secondary"
+                    href="/dashboard?page={{sub .Pagination.CurrentPage 1}}&service={{.Filters.Service}}&level={{.Filters.Level}}&search={{.Filters.Search}}">
 
-    </span>
+                    ← Previous
 
-    <button
-        disabled>
+                </a>
 
-        Next
+            {{end}}
 
-    </button>
+        </div>
 
-</section>
+        <div class="pagination-center">
+
+            <span>
+
+                Page
+                <strong>{{.Pagination.CurrentPage}}</strong>
+
+                of
+
+                <strong>{{.Pagination.TotalPages}}</strong>
+
+            </span>
+
+        </div>
+
+        <div class="pagination-right">
+
+            {{if .Pagination.HasNext}}
+
+                <a
+                    class="btn btn-secondary"
+                    href="/dashboard?page={{add .Pagination.CurrentPage 1}}&service={{.Filters.Service}}&level={{.Filters.Level}}&search={{.Filters.Search}}">
+
+                    Next →
+
+                </a>
+
+            {{end}}
+
+        </div>
+
+    </div>
+
+</nav>
+
+{{end}}
 
 {{end}}

@@ -2,15 +2,29 @@
 
 <section class="filters">
 
-    <h2>Filters</h2>
+    <div class="card">
 
-    <form
-        method="GET"
-        action="/dashboard">
+        <form
+            class="filter-form"
+            action="/dashboard"
+            method="GET">
 
-        <div class="filter-row">
+            <div class="filter-group">
 
-            <div class="filter-item">
+                <label for="service">
+                    Service
+                </label>
+
+                <input
+                    id="service"
+                    name="service"
+                    type="text"
+                    placeholder="api"
+                    value="{{.Filters.Service}}">
+
+            </div>
+
+            <div class="filter-group">
 
                 <label for="level">
                     Level
@@ -20,45 +34,41 @@
                     id="level"
                     name="level">
 
-                    <option value="">
+                    <option value=""
+                        {{if eq .Filters.Level ""}}selected{{end}}>
                         All
                     </option>
 
-                    <option value="INFO">
-                        INFO
+                    <option value="debug"
+                        {{if eq .Filters.Level "debug"}}selected{{end}}>
+                        Debug
                     </option>
 
-                    <option value="WARN">
-                        WARN
+                    <option value="info"
+                        {{if eq .Filters.Level "info"}}selected{{end}}>
+                        Info
                     </option>
 
-                    <option value="ERROR">
-                        ERROR
+                    <option value="warn"
+                        {{if eq .Filters.Level "warn"}}selected{{end}}>
+                        Warn
                     </option>
 
-                    <option value="DEBUG">
-                        DEBUG
+                    <option value="error"
+                        {{if eq .Filters.Level "error"}}selected{{end}}>
+                        Error
+                    </option>
+
+                    <option value="fatal"
+                        {{if eq .Filters.Level "fatal"}}selected{{end}}>
+                        Fatal
                     </option>
 
                 </select>
 
             </div>
 
-            <div class="filter-item">
-
-                <label for="service">
-                    Service
-                </label>
-
-                <input
-                    id="service"
-                    type="text"
-                    name="service"
-                    placeholder="Service name">
-
-            </div>
-
-            <div class="filter-item">
+            <div class="filter-group">
 
                 <label for="search">
                     Search
@@ -66,21 +76,36 @@
 
                 <input
                     id="search"
-                    type="text"
                     name="search"
-                    placeholder="Search message">
+                    type="text"
+                    placeholder="Search message..."
+                    value="{{.Filters.Search}}">
 
             </div>
 
-        </div>
+            <div class="filter-actions">
 
-        <button type="submit">
+                <button
+                    class="btn btn-primary"
+                    type="submit">
 
-            Apply Filters
+                    Apply Filters
 
-        </button>
+                </button>
 
-    </form>
+                <a
+                    class="btn btn-secondary"
+                    href="/dashboard">
+
+                    Reset
+
+                </a>
+
+            </div>
+
+        </form>
+
+    </div>
 
 </section>
 

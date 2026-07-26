@@ -1,32 +1,49 @@
+
 {{define "stats"}}
 
 <section class="stats">
 
-    <h2>Overview</h2>
+    <div class="section-header">
+
+        <h2>Overview</h2>
+
+    </div>
 
     <div class="stats-grid">
 
         <div class="stat-card">
 
-            <h3>Total Logs</h3>
+            <span class="stat-title">
+                Total Logs
+            </span>
 
-            <p>0</p>
-
-        </div>
-
-        <div class="stat-card">
-
-            <h3>Services</h3>
-
-            <p>0</p>
+            <span class="stat-value">
+                {{.Stats.TotalLogs}}
+            </span>
 
         </div>
 
         <div class="stat-card">
 
-            <h3>Error Logs</h3>
+            <span class="stat-title">
+                Services
+            </span>
 
-            <p>0</p>
+            <span class="stat-value">
+                {{.Stats.TotalServices}}
+            </span>
+
+        </div>
+
+        <div class="stat-card">
+
+            <span class="stat-title">
+                Error Logs
+            </span>
+
+            <span class="stat-value">
+                {{.Stats.ErrorLogs}}
+            </span>
 
         </div>
 
@@ -35,3 +52,4 @@
 </section>
 
 {{end}}
+
