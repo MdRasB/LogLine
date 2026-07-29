@@ -796,3 +796,73 @@ p{
         width:100%;
     }
 }
+
+/* ==============================
+   Charts
+============================== */
+
+.charts {
+
+    display: grid;
+
+    grid-template-columns: repeat(2, 1fr);
+
+    gap: 1.5rem;
+
+    margin: 2rem 0;
+
+}
+
+.chart-card {
+
+    background: white;
+
+    border: 1px solid var(--border);
+
+    border-radius: var(--radius);
+
+    box-shadow: var(--shadow);
+
+    padding: 1.25rem;
+
+    height: 420px;
+
+    position: relative;
+
+}
+
+.chart-card h2 {
+
+    margin-bottom: 1rem;
+
+}
+
+.chart-card canvas {
+
+    width: 100% !important;
+
+    height: calc(100% - 45px) !important;
+
+}
+
+.chart-wide {
+
+    grid-column: 1 / -1;
+
+}
+
+@media (max-width: 900px) {
+
+    .charts {
+
+        grid-template-columns: 1fr;
+
+    }
+
+    .chart-wide {
+
+        grid-column: auto;
+
+    }
+
+}

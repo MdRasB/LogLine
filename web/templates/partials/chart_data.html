@@ -1,0 +1,37 @@
+{{define "chart_data"}}
+
+<script id="dashboard-data" type="application/json">
+{
+    "volume": [
+        {{range $i, $v := .Stats.Volume}}
+        {{if $i}},{{end}}
+        {
+            "hour":"{{$v.Hour}}",
+            "count":{{$v.Count}}
+        }
+        {{end}}
+    ],
+
+    "levels":[
+        {{range $i, $v := .Stats.Levels}}
+        {{if $i}},{{end}}
+        {
+            "level":"{{$v.Level}}",
+            "count":{{$v.Count}}
+        }
+        {{end}}
+    ],
+
+    "services":[
+        {{range $i, $v := .Stats.Services}}
+        {{if $i}},{{end}}
+        {
+            "service":"{{$v.Service}}",
+            "count":{{$v.Count}}
+        }
+        {{end}}
+    ]
+}
+</script>
+
+{{end}}
