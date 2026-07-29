@@ -408,6 +408,41 @@ p{
     flex-wrap:wrap;
 }
 
+.active-filters{
+
+    margin-top:1.25rem;
+
+    display:flex;
+
+    flex-wrap:wrap;
+
+    align-items:center;
+
+    gap:.75rem;
+}
+
+.active-filters strong{
+
+    color:var(--text);
+
+    font-size:.9rem;
+}
+
+.active-filters span{
+
+    background:var(--surface-2);
+
+    border:1px solid var(--border);
+
+    border-radius:999px;
+
+    padding:.35rem .75rem;
+
+    font-size:.85rem;
+
+    color:var(--text);
+}
+
 
 /* ==========================================================
    STATS

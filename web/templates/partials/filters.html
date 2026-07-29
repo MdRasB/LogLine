@@ -105,6 +105,28 @@
 
         </form>
 
+        {{if or .Filters.Service .Filters.Level .Filters.Search}}
+
+        <div class="active-filters">
+
+            <strong>Active Filters:</strong>
+
+            {{if .Filters.Service}}
+                <span>Service: {{.Filters.Service}}</span>
+            {{end}}
+
+            {{if .Filters.Level}}
+                <span>Level: {{.Filters.Level}}</span>
+            {{end}}
+
+            {{if .Filters.Search}}
+                <span>Search: {{.Filters.Search}}</span>
+            {{end}}
+
+        </div>
+
+        {{end}}
+
     </div>
 
 </section>

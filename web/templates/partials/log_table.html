@@ -36,7 +36,7 @@
 
                     <tr>
 
-                        <td>{{.Timestamp}}</td>
+                        <td>{{.Timestamp.Format "2006-01-02 15:04:05"}}</td>
 
                         <td>
 
@@ -58,11 +58,9 @@
 
                     <tr>
 
-                        <td
-                            colspan="4"
-                            class="empty-table">
+                        <td colspan="4" class="empty-table">
 
-                            No logs available.
+                            No logs matched the current filters.
 
                         </td>
 
