@@ -10,6 +10,7 @@ import (
 
 func (s *Server) registerPublicRoutes() {
 	authHandler := handler.NewAuthHandler(s.authService)
+	healthHandler := handler.NewHealthHandler(s.db, s.startedAt, s.version)
 
 	dashboardHandler := handler.NewDashboardHandler(
 		&s.logStore,
@@ -26,7 +27,7 @@ func (s *Server) registerPublicRoutes() {
 	s.mux.Handle(
 		"/health",
 		s.publicChain(
-			http.HandlerFunc(handler.HandleHealth),
+			http.HandlerFunc(healthHandler.HandleHealth),
 		),
 	)
 

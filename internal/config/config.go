@@ -14,6 +14,7 @@ type Config struct {
 	DBURL     string
 	ReqPerSec float64
 	Burst     int
+	Version   string
 }
 
 func Load() *Config {
@@ -27,6 +28,8 @@ func Load() *Config {
 
 	Port := getEnv("PORT", ":8079")
 	DBURL := getEnv("DB_URL", "")
+
+	Version := getEnv("VERSION", "0.0.0")
 
 	ReqPerSec, err := strconv.ParseFloat(reqPerSec, 64)
 	if err != nil {
@@ -47,6 +50,7 @@ func Load() *Config {
 		DBURL:     DBURL,
 		ReqPerSec: ReqPerSec,
 		Burst:     Burst,
+		Version:   Version,
 	}
 
 	if cfg.DBURL == "" {

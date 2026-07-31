@@ -21,6 +21,7 @@ func main() {
 
 func run() error {
 	fmt.Println("Starting LogLine server...")
+	startedAt := time.Now()
 
 	cfg := config.Load()
 
@@ -28,8 +29,9 @@ func run() error {
 	dbStr := cfg.DBURL
 	reqPrSec := cfg.ReqPerSec
 	burst := cfg.Burst
+	version := cfg.Version
 
-	srv, err := server.NewServer(port, dbStr, reqPrSec, burst)
+	srv, err := server.NewServer(port, dbStr, reqPrSec, burst, startedAt, version)
 	if err != nil {
 		return err
 	}

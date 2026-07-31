@@ -6,6 +6,7 @@ import (
 	"log"
 	"log/slog"
 	"net/http"
+	"time"
 
 	"github.com/MdRasB/LogLine/internal/auth"
 	"github.com/MdRasB/LogLine/internal/db"
@@ -25,6 +26,8 @@ type Server struct {
 	sessionStore db.SessionStore
 	logger       *slog.Logger
 	authService  *auth.Service
+	startedAt    time.Time
+	version      string
 
 	templates *web.TemplateManager
 
@@ -34,12 +37,12 @@ type Server struct {
 	ratelimiter        *middleware.RateLimiter
 }
 
-func NewServer(addr, dbstore string, requestPerSecond float64, burst int) (*Server, error) {
+func NewServer(addr, dbstore string, requestPerSecond float64, burst int, startedAt time.Time, version string) (*Server, error) {
 	mux := http.NewServeMux()
 
 	pool, err := db.New(dbstore)
 	if err != nil {
-		return nil, fmt.Errorf("failed to initialize database: %v", err)
+		return nil, fmt.Errorf("failed to initialize database: %w", err)
 	}
 
 	dbStore := db.NewLogStore(pool)
@@ -60,7 +63,7 @@ func NewServer(addr, dbstore string, requestPerSecond float64, burst int) (*Serv
 
 	templates, err := web.NewTemplateManager()
 	if err != nil {
-		return nil, fmt.Errorf("failed to initialize template manager: %v", err)
+		return nil, fmt.Errorf("failed to initialize template manager: %w", err)
 	}
 
 	// Middleware Variables
@@ -77,6 +80,8 @@ func NewServer(addr, dbstore string, requestPerSecond float64, burst int) (*Serv
 		sessionStore:       *sessnStore,
 		logger:             logger,
 		authService:        authService,
+		startedAt:          startedAt,
+		version:            version,
 		templates:          templates,
 		authMiddleware:     authMiddleware,
 		loggingMiddleware:  loggingMiddleware,
