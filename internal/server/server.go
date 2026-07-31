@@ -1,6 +1,8 @@
 package server
 
 import (
+	"context"
+	"fmt"
 	"log"
 	"log/slog"
 	"net/http"
@@ -13,8 +15,10 @@ import (
 )
 
 type Server struct {
-	addr         string
-	mux          *http.ServeMux
+	addr       string
+	mux        *http.ServeMux
+	httpServer *http.Server
+
 	db           *pgxpool.Pool
 	logStore     db.DBStore
 	userStore    db.UserStore
@@ -30,12 +34,12 @@ type Server struct {
 	ratelimiter        *middleware.RateLimiter
 }
 
-func NewServer(addr, dbstore string, requestPerSecond float64, burst int) *Server {
+func NewServer(addr, dbstore string, requestPerSecond float64, burst int) (*Server, error) {
 	mux := http.NewServeMux()
 
 	pool, err := db.New(dbstore)
 	if err != nil {
-		log.Fatalf("failed to initialize database: %v", err)
+		return nil, fmt.Errorf("failed to initialize database: %v", err)
 	}
 
 	dbStore := db.NewLogStore(pool)
@@ -56,7 +60,7 @@ func NewServer(addr, dbstore string, requestPerSecond float64, burst int) *Serve
 
 	templates, err := web.NewTemplateManager()
 	if err != nil {
-		log.Fatalf("failed to initialize template manager: %v", err)
+		return nil, fmt.Errorf("failed to initialize template manager: %v", err)
 	}
 
 	// Middleware Variables
@@ -82,10 +86,38 @@ func NewServer(addr, dbstore string, requestPerSecond float64, burst int) *Serve
 
 	s.registerRoutes()
 
-	return s
+	s.httpServer = &http.Server{
+		Addr:    s.addr,
+		Handler: s.mux,
+	}
+	return s, nil
 }
 
 func (s *Server) Start() error {
 	log.Printf("Server running on %s\n", s.addr)
-	return http.ListenAndServe(s.addr, s.mux)
+
+	err := s.httpServer.ListenAndServe()
+
+	if err != nil && err != http.ErrServerClosed {
+		return err
+	}
+
+	log.Println("HTTP server closed down normally")
+	return nil
+}
+
+func (s *Server) Shutdown(ctx context.Context) error {
+	log.Println("shutting down the HTTP server gracefully...")
+
+	err := s.httpServer.Shutdown(ctx)
+	fmt.Println("Closing databse connection pool")
+	if s.db != nil {
+		s.db.Close()
+	}
+
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
