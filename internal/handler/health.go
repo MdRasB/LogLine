@@ -39,20 +39,20 @@ func (h *HealthHandler) HandleHealth(w http.ResponseWriter, r *http.Request) {
 	}
 
 	databaseStatus := "up"
-	fullStatus := "ok"
+	fullStatus := "healthy"
 	httpStatusCode := http.StatusOK
 
 	// FIX 1: Safely check if database pool is nil BEFORE trying to call .Ping() on it
 	if h.db == nil {
 		databaseStatus = "down"
-		fullStatus = "degraded"
+		fullStatus = "unhealthy"
 		httpStatusCode = http.StatusServiceUnavailable
 	} else {
 		// Pool is safe to use, proceed to ping
 		err := h.db.Ping(r.Context())
 		if err != nil {
 			databaseStatus = "down"
-			fullStatus = "degraded"
+			fullStatus = "unhealthy"
 			httpStatusCode = http.StatusServiceUnavailable
 		}
 	}
