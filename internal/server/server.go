@@ -115,14 +115,13 @@ func (s *Server) Shutdown(ctx context.Context) error {
 	log.Println("shutting down the HTTP server gracefully...")
 
 	err := s.httpServer.Shutdown(ctx)
-	fmt.Println("Closing databse connection pool")
-	if s.db != nil {
-		s.db.Close()
-	}
-
 	if err != nil {
 		return err
 	}
 
+	fmt.Println("Closing databse connection pool")
+	if s.db != nil {
+		s.db.Close()
+	}
 	return nil
 }
