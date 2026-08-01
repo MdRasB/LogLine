@@ -30,7 +30,7 @@ func NewHealthHandler(db *pgxpool.Pool, startedAt time.Time, version string) *He
 	}
 }
 
-func (h *HealthHandler) HandleHealth(w http.ResponseWriter, r *http.Request) {
+func (h *HealthHandler) Handle(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
 		WriteJSON(w, http.StatusMethodNotAllowed, map[string]string{
 			"error": "method not allowed",
@@ -42,13 +42,11 @@ func (h *HealthHandler) HandleHealth(w http.ResponseWriter, r *http.Request) {
 	fullStatus := "healthy"
 	httpStatusCode := http.StatusOK
 
-	// FIX 1: Safely check if database pool is nil BEFORE trying to call .Ping() on it
 	if h.db == nil {
 		databaseStatus = "down"
 		fullStatus = "unhealthy"
 		httpStatusCode = http.StatusServiceUnavailable
 	} else {
-		// Pool is safe to use, proceed to ping
 		err := h.db.Ping(r.Context())
 		if err != nil {
 			databaseStatus = "down"
@@ -69,7 +67,5 @@ func (h *HealthHandler) HandleHealth(w http.ResponseWriter, r *http.Request) {
 		Version:   h.version,
 	}
 
-	// FIX 2: Pass your actual populated "report" object into WriteJSON
 	WriteJSON(w, httpStatusCode, report)
 }
-

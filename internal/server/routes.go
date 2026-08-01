@@ -27,7 +27,7 @@ func (s *Server) registerPublicRoutes() {
 	s.mux.Handle(
 		"/health",
 		s.publicChain(
-			http.HandlerFunc(healthHandler.HandleHealth),
+			http.HandlerFunc(healthHandler.Handle),
 		),
 	)
 

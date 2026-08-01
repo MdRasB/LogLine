@@ -107,7 +107,7 @@ func (s *Server) Start() error {
 		return err
 	}
 
-	log.Println("HTTP server closed down normally")
+	log.Println("HTTP server is being closed normally")
 	return nil
 }
 
