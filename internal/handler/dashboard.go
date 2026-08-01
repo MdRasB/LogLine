@@ -17,58 +17,36 @@ type DashboardHandler struct {
 	templates *web.TemplateManager
 }
 
-func NewDashboardHandler(
-	store *db.DBStore,
-	templates *web.TemplateManager,
-) *DashboardHandler {
+func NewDashboardHandler(store *db.DBStore, templates *web.TemplateManager) *DashboardHandler {
 	return &DashboardHandler{
 		logStore:  store,
 		templates: templates,
 	}
 }
 
-func (h *DashboardHandler) Dashboard(
-	w http.ResponseWriter,
-	r *http.Request,
-) {
+func (h *DashboardHandler) Dashboard(w http.ResponseWriter, r *http.Request) {
 	filter := h.buildLogFilter(r)
-
-	// ----------------------------------------
-	// Load Logs
-	// ----------------------------------------
 
 	result, err := h.logStore.GetLogs(
 		filter,
 		context.Background(),
 	)
 	if err != nil {
-		http.Error(
-			w,
-			"Failed to load dashboard",
-			http.StatusInternalServerError,
-		)
+		WriteJSON(w, http.StatusInternalServerError, map[string]string{
+			"error": "failed to load dashboard",
+		})
 		return
 	}
-
-	// ----------------------------------------
-	// Load Dashboard Statistics
-	// ----------------------------------------
 
 	stats, err := h.logStore.GetDashboardStats(
 		context.Background(),
 	)
 	if err != nil {
-		http.Error(
-			w,
-			"Failed to load dashboard statistics",
-			http.StatusInternalServerError,
-		)
+		WriteJSON(w, http.StatusInternalServerError, map[string]string{
+			"error": "failed to load dashboard statistics",
+		})
 		return
 	}
-
-	// ----------------------------------------
-	// Build Dashboard Data
-	// ----------------------------------------
 
 	data := h.buildDashboardData(
 		result,
@@ -76,27 +54,20 @@ func (h *DashboardHandler) Dashboard(
 		filter,
 	)
 
-	// ----------------------------------------
-	// Render Template
-	// ----------------------------------------
-
 	err = h.templates.Render(
 		w,
 		"dashboard.html",
 		data,
 	)
 	if err != nil {
-		http.Error(
-			w,
-			"Internal Server Error",
-			http.StatusInternalServerError,
-		)
+		WriteJSON(w, http.StatusInternalServerError, map[string]string{
+			"error": "internal server error",
+		})
+		return
 	}
 }
 
-func (h *DashboardHandler) buildLogFilter(
-	r *http.Request,
-) model.LogFilter {
+func (h *DashboardHandler) buildLogFilter(r *http.Request) model.LogFilter {
 	query := r.URL.Query()
 
 	page := 1
@@ -123,11 +94,7 @@ func (h *DashboardHandler) buildLogFilter(
 	}
 }
 
-func (h *DashboardHandler) buildDashboardData(
-	result *model.PaginatedLogs,
-	stats *dashboard.DashboardStats,
-	filter model.LogFilter,
-) dashboard.DashboardData {
+func (h *DashboardHandler) buildDashboardData(result *model.PaginatedLogs, stats *dashboard.DashboardStats, filter model.LogFilter) dashboard.DashboardData {
 	totalPages := int(
 		math.Ceil(
 			float64(result.Total) /
@@ -159,9 +126,5 @@ func (h *DashboardHandler) buildDashboardData(
 	}
 }
 
-func (h *DashboardHandler) Stats(
-	w http.ResponseWriter,
-	r *http.Request,
-) {
-	// Will be implemented in the next step
+func (h *DashboardHandler) Stats(w http.ResponseWriter, r *http.Request) {
 }

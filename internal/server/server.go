@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/MdRasB/LogLine/internal/auth"
+	"github.com/MdRasB/LogLine/internal/config"
 	"github.com/MdRasB/LogLine/internal/db"
 	"github.com/MdRasB/LogLine/internal/middleware"
 	"github.com/MdRasB/LogLine/internal/web"
@@ -37,7 +38,13 @@ type Server struct {
 	ratelimiter        *middleware.RateLimiter
 }
 
-func NewServer(addr, dbstore string, requestPerSecond float64, burst int, startedAt time.Time, version string) (*Server, error) {
+func NewServer(startedAt time.Time, cfg *config.Config) (*Server, error) {
+	addr := cfg.Port
+	dbstore := cfg.DBURL
+	requestPerSecond := cfg.ReqPerSec
+	burst := cfg.Burst
+	version := cfg.Version
+
 	mux := http.NewServeMux()
 
 	pool, err := db.New(dbstore)
@@ -92,8 +99,13 @@ func NewServer(addr, dbstore string, requestPerSecond float64, burst int, starte
 	s.registerRoutes()
 
 	s.httpServer = &http.Server{
-		Addr:    s.addr,
-		Handler: s.mux,
+		Addr:              s.addr,
+		Handler:           s.mux,
+		ReadTimeout:       cfg.ReadTimeout,
+		ReadHeaderTimeout: cfg.ReadHeaderTimeout,
+		WriteTimeout:      cfg.WriteTimeout,
+		IdleTimeout:       cfg.IdleTimeout,
+		MaxHeaderBytes:    1 << 20,
 	}
 	return s, nil
 }

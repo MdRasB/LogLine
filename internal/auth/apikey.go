@@ -6,6 +6,7 @@ import (
 	"crypto/sha256"
 	"crypto/subtle"
 	"encoding/hex"
+
 	//"errors"
 	"fmt"
 )
@@ -41,4 +42,3 @@ func VerifyAPIKey(key, storedHash string) bool {
 		[]byte(storedHash),
 	) == 1
 }
-

@@ -36,30 +36,29 @@ func (h *IngestHandler) Handle(w http.ResponseWriter, r *http.Request) {
 	var log model.Logs
 
 	if err := jsonDecodeLog(r.Body, &log); err != nil {
-		http.Error(w, "invalid JSON body", http.StatusBadRequest)
+		WriteJSON(w, http.StatusBadRequest, map[string]string{
+			"error": "invalid JSON body",
+		})
 		return
 	}
 
 	if err := Validate(log); err != nil {
-		http.Error(w, err.Error(), http.StatusUnprocessableEntity)
+		WriteJSON(w, http.StatusUnprocessableEntity, map[string]string{
+			"error": err.Error(),
+		})
 		return
 	}
 
 	if err := h.store.Insert(log); err != nil {
-		http.Error(w, "failed to store log", http.StatusInternalServerError)
+		WriteJSON(w, http.StatusInternalServerError, map[string]string{
+			"error": "failed to store log",
+		})
 		return
 	}
 
-	response := map[string]string{
+	WriteJSON(w, http.StatusOK, map[string]string{
 		"message": "log accepted",
-	}
-
-	w.Header().Set("Content_type:", "application/JSON")
-	err := json.NewEncoder(w).Encode(response)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
-	}
+	})
 
 	fmt.Println("Received request:", r.Method)
 }

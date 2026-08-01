@@ -23,19 +23,23 @@ func run() error {
 	fmt.Println("Starting LogLine server...")
 	startedAt := time.Now()
 
-	cfg := config.Load()
+	cfg, err := config.Load()
+	if err != nil {
+		log.Println("error in environment configuration")
+		return err
+	}
 
-	port := cfg.Port
-	dbStr := cfg.DBURL
-	reqPrSec := cfg.ReqPerSec
-	burst := cfg.Burst
-	version := cfg.Version
+	//port := cfg.Port
+	//dbStr := cfg.DBURL
+	//reqPrSec := cfg.ReqPerSec
+	//burst := cfg.Burst
+	//version := cfg.Version
 
-	srv, err := server.NewServer(port, dbStr, reqPrSec, burst, startedAt, version)
+	srv, err := server.NewServer(startedAt, cfg)
 	if err != nil {
 		return err
 	}
-	fmt.Printf("Starting the server on %v\n", port)
+	fmt.Printf("Starting the server on %v\n", cfg.Port)
 
 	errChan := make(chan error, 1)
 
