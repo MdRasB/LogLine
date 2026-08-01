@@ -12,7 +12,6 @@ func GenerateRequestID() (string, error) {
 	key := make([]byte, 16)
 
 	if _, err := rand.Read(key); err != nil {
-
 		return "", fmt.Errorf("generate request id: %w", err)
 	}
 
@@ -23,14 +22,11 @@ func GenerateRequestID() (string, error) {
 
 func RequestID(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-
 		requestID, err := GenerateRequestID()
-
 		if err != nil {
-			http.Error(w,
-				"internal server error",
-				http.StatusInternalServerError,
-			)
+			WriteJSON(w, http.StatusInternalServerError, map[string]string{
+				"error": "internal server error",
+			})
 		}
 
 		ctx := context.WithValue(

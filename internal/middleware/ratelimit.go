@@ -63,11 +63,9 @@ func (rl *RateLimiter) Middleware(
 	) {
 		ip, _, err := net.SplitHostPort(r.RemoteAddr)
 		if err != nil {
-			http.Error(
-				w,
-				"invalid client address",
-				http.StatusInternalServerError,
-			)
+			WriteJSON(w, http.StatusInternalServerError, map[string]string{
+				"error": "invalid client address",
+			})
 			return
 		}
 
@@ -92,15 +90,12 @@ func (rl *RateLimiter) Middleware(
 		rl.mut.Unlock()
 
 		if !client.limiter.Allow() {
-			http.Error(
-				w,
-				"rate limit exceeded",
-				http.StatusTooManyRequests,
-			)
+			WriteJSON(w, http.StatusTooManyRequests, map[string]string{
+				"error": "rate limit exceeded",
+			})
 			return
 		}
 
 		next.ServeHTTP(w, r)
 	})
 }
-

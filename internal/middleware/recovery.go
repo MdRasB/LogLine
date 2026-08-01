@@ -26,9 +26,9 @@ func Recovery(logger *slog.Logger) Middleware {
 						"stack", string(debug.Stack()),
 					)
 
-					http.Error(
-						w, "internel server error", http.StatusInternalServerError,
-					)
+					WriteJSON(w, http.StatusInternalServerError, map[string]string{
+						"error": "internal server error",
+					})
 				}
 			}()
 
@@ -36,4 +36,3 @@ func Recovery(logger *slog.Logger) Middleware {
 		})
 	}
 }
-

@@ -7,25 +7,18 @@ type ResponseWriter struct {
 	statusCode int
 }
 
-func NewResponseWriter(
-	w http.ResponseWriter,
-) *ResponseWriter {
+func NewResponseWriter(w http.ResponseWriter) *ResponseWriter {
 	return &ResponseWriter{
 		ResponseWriter: w,
 		statusCode:     http.StatusOK,
 	}
 }
 
-func (rw *ResponseWriter) WriteHeader(
-	statusCode int,
-) {
+func (rw *ResponseWriter) WriteHeader(statusCode int) {
 	rw.statusCode = statusCode
-
 	rw.ResponseWriter.WriteHeader(statusCode)
 }
 
-func (rw *ResponseWriter) Write(
-	data []byte,
-) (int, error) {
+func (rw *ResponseWriter) Write(data []byte) (int, error) {
 	return rw.ResponseWriter.Write(data)
 }
