@@ -10,7 +10,7 @@ func Chain(
 ) http.Handler {
 	wrapped := h
 
-	for i := len(middlewares)-1; i>=0 ; i-- {
+	for i := len(middlewares) - 1; i >= 0; i-- {
 		wrapped = middlewares[i](wrapped)
 	}
 

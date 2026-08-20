@@ -102,9 +102,9 @@ func (s *Server) protectedChain(h http.Handler) http.Handler {
 		h,
 		middleware.RequestID,
 		s.recoveryMiddleware,
-		s.loggingMiddleware,
 		s.ratelimiter.Middleware,
 		s.authMiddleware,
+		s.loggingMiddleware,
 	)
 }
 

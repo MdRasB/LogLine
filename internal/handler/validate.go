@@ -9,7 +9,7 @@ import (
 
 var ValidateLevel = map[string]bool{
 	"error": true, "warn": true,
-	"info":  true, "debug": true,
+	"info": true, "debug": true,
 	"fatal": true,
 }
 
@@ -43,7 +43,6 @@ func Validate(log model.Logs) error {
 	if _, err := time.Parse(time.RFC3339, log.Timestamp); err != nil {
 		return errors.New("invalid timestamp format")
 	}
-
 
 	return nil
 }

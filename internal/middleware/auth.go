@@ -2,10 +2,10 @@
 package middleware
 
 import (
-	"context"
 	"net/http"
 
 	"github.com/MdRasB/LogLine/internal/auth"
+	"github.com/MdRasB/LogLine/internal/contextutil"
 )
 
 func AuthMiddleware(authService *auth.Service) func(http.Handler) http.Handler {
@@ -30,14 +30,13 @@ func AuthMiddleware(authService *auth.Service) func(http.Handler) http.Handler {
 				return
 			}
 
-			ctx := context.WithValue(
+			ctx := contextutil.WithUserID(
 				r.Context(),
-				UserIDKey,
 				session.UserID,
 			)
-			ctx = context.WithValue(
+
+			ctx = contextutil.WithSessionID(
 				ctx,
-				SessionIDKey,
 				session.ID,
 			)
 
@@ -46,14 +45,4 @@ func AuthMiddleware(authService *auth.Service) func(http.Handler) http.Handler {
 			next.ServeHTTP(w, r)
 		})
 	}
-}
-
-func GetUserID(ctx context.Context) (string, bool) {
-	userID, ok := ctx.Value(UserIDKey).(string)
-	return userID, ok
-}
-
-func GetSessionID(ctx context.Context) (string, bool) {
-	SessionID, ok := ctx.Value(SessionIDKey).(string)
-	return SessionID, ok
 }

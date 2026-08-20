@@ -29,12 +29,6 @@ func run() error {
 		return err
 	}
 
-	//port := cfg.Port
-	//dbStr := cfg.DBURL
-	//reqPrSec := cfg.ReqPerSec
-	//burst := cfg.Burst
-	//version := cfg.Version
-
 	srv, err := server.NewServer(startedAt, cfg)
 	if err != nil {
 		return err

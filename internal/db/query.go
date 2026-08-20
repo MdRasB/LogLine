@@ -27,7 +27,7 @@ func GetLogsQuery(lf model.LogFilter) (string, []any) {
 	}
 
 	if lf.From != nil {
-		args = append(args, *lf.From) 
+		args = append(args, *lf.From)
 		where = append(where, fmt.Sprintf("timestamp >= $%d", len(args)))
 	}
 
@@ -35,7 +35,7 @@ func GetLogsQuery(lf model.LogFilter) (string, []any) {
 		args = append(args, *lf.To)
 		where = append(where, fmt.Sprintf("timestamp <= $%d", len(args)))
 	}
-	
+
 	qry := `SELECT id, level, message,service, timestamp, metadata, created_at FROM logs`
 
 	if len(where) > 0 {
@@ -50,9 +50,8 @@ func GetLogsQuery(lf model.LogFilter) (string, []any) {
 		len(args)-1, len(args),
 	)
 
-	return qry, args;
+	return qry, args
 }
-
 
 func CountLogsQuery(lf model.LogFilter) (string, []any) {
 	args := []any{}
@@ -74,7 +73,7 @@ func CountLogsQuery(lf model.LogFilter) (string, []any) {
 	}
 
 	if lf.From != nil {
-		args = append(args, *lf.From) 
+		args = append(args, *lf.From)
 		where = append(where, fmt.Sprintf("timestamp >= $%d", len(args)))
 	}
 

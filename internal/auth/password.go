@@ -7,7 +7,7 @@ import (
 )
 
 const (
-	BcryptCost = 12
+	BcryptCost        = 12
 	MinPasswordLength = 8
 )
 
@@ -20,7 +20,7 @@ func HashPassword(password string) (string, error) {
 		return "", errors.New("password must be 8 character long")
 	}
 
-	hash , err := bcrypt.GenerateFromPassword(
+	hash, err := bcrypt.GenerateFromPassword(
 		[]byte(password),
 		BcryptCost,
 	)
@@ -31,10 +31,9 @@ func HashPassword(password string) (string, error) {
 	return string(hash), nil
 }
 
-func VerifyPassword (password, hash string) error {
+func VerifyPassword(password, hash string) error {
 	return bcrypt.CompareHashAndPassword(
 		[]byte(hash),
 		[]byte(password),
 	)
 }
-

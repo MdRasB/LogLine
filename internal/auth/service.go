@@ -11,8 +11,8 @@ import (
 	"github.com/google/uuid"
 )
 
-type Service struct{
-	users *db.UserStore
+type Service struct {
+	users    *db.UserStore
 	sessions *db.SessionStore
 }
 
@@ -34,14 +34,14 @@ func (s *Service) Register(req RegisterRequest) error {
 
 	hash, err := HashPassword(req.Password)
 	if err != nil {
-		return err 
+		return err
 	}
 
 	user := model.User{
-		ID: uuid.New(),
-		Email: req.Email,
+		ID:           uuid.New(),
+		Email:        req.Email,
 		PasswordHash: hash,
-		CreatedAt: time.Now(),
+		CreatedAt:    time.Now(),
 	}
 
 	err = s.users.CreateUser(user)
@@ -65,7 +65,7 @@ func (s *Service) Login(req LoginRequest) (string, error) {
 
 	err = VerifyPassword(req.Password, user.PasswordHash)
 	if err != nil {
-		return "", err 
+		return "", err
 	}
 
 	token, tokenhash, err := GenerateSessionToken()
@@ -74,8 +74,8 @@ func (s *Service) Login(req LoginRequest) (string, error) {
 	}
 
 	session := model.Session{
-		ID: uuid.New(),
-		UserID: user.ID,
+		ID:        uuid.New(),
+		UserID:    user.ID,
 		TokenHash: tokenhash,
 		ExpiresAt: time.Now().Add(SessionDuration),
 		CreatedAt: time.Now(),
@@ -83,7 +83,7 @@ func (s *Service) Login(req LoginRequest) (string, error) {
 
 	err = s.sessions.CreateSession(session)
 	if err != nil {
-		return "", err 
+		return "", err
 	}
 
 	return token, nil
@@ -98,19 +98,19 @@ func (s *Service) Logout(token string) error {
 
 	session, err := s.sessions.GetSessionByTokenHash(hash)
 	if err != nil {
-		return err 
+		return err
 	}
 
 	err = s.sessions.DeleteSession(session.ID)
 	if err != nil {
-		return err 
-	}	
+		return err
+	}
 
 	return nil
 }
 
 func ValidateEmail(email string) error {
 	_, err := mail.ParseAddress(email)
-	
-	return err 
+
+	return err
 }

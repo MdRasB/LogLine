@@ -41,7 +41,7 @@ func (s *SessionStore) CreateSession(session model.Session) error {
 		return err
 	}
 
-	return nil 
+	return nil
 }
 
 func (s *SessionStore) GetSessionByTokenHash(tokenHash string) (model.Session, error) {
@@ -115,5 +115,5 @@ func (s *SessionStore) DeleteExpiredSessions() error {
 		return fmt.Errorf("deleting expired session: %w", err)
 	}
 
-	return nil 
+	return nil
 }

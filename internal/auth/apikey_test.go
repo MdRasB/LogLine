@@ -14,7 +14,7 @@ func TestGenerateAPIKey(t *testing.T) {
 }
 
 func TestGenerateAPIKeyUnique(t *testing.T) {
-	key1, _,  err := GenerateAPIKey()
+	key1, _, err := GenerateAPIKey()
 	if err != nil {
 		t.Fatalf("generate key1: %v", err)
 	}

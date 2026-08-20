@@ -4,6 +4,8 @@ import (
 	"log/slog"
 	"net/http"
 	"runtime/debug"
+
+	"github.com/MdRasB/LogLine/internal/contextutil"
 	//"time"
 )
 
@@ -15,7 +17,7 @@ func Recovery(logger *slog.Logger) Middleware {
 		) {
 			defer func() {
 				if err := recover(); err != nil {
-					requestID, _ := GetRequestID(r.Context())
+					requestID, _ := contextutil.RequestID(r.Context())
 
 					logger.Error(
 						"panic recovered",

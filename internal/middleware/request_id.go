@@ -1,11 +1,12 @@
 package middleware
 
 import (
-	"context"
 	"crypto/rand"
 	"encoding/hex"
 	"fmt"
 	"net/http"
+
+	"github.com/MdRasB/LogLine/internal/contextutil"
 )
 
 func GenerateRequestID() (string, error) {
@@ -27,11 +28,10 @@ func RequestID(next http.Handler) http.Handler {
 			WriteJSON(w, http.StatusInternalServerError, map[string]string{
 				"error": "internal server error",
 			})
+			return
 		}
-
-		ctx := context.WithValue(
+		ctx := contextutil.WithRequestID(
 			r.Context(),
-			RequestIDKey,
 			requestID,
 		)
 
@@ -42,9 +42,4 @@ func RequestID(next http.Handler) http.Handler {
 
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})
-}
-
-func GetRequestID(ctx context.Context) (string, bool) {
-	RequestID, ok := ctx.Value(RequestIDKey).(string)
-	return RequestID, ok
 }

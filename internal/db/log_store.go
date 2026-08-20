@@ -41,14 +41,14 @@ func (s *DBStore) Insert(log model.Logs) error {
 		//fmt.Errorf("db: failed to insert log: %v", err)
 		return err
 	}
-	
+
 	return nil
 }
 
 func (s *DBStore) GetLogs(
 	lf model.LogFilter,
 	ctx context.Context,
-)(*model.PaginatedLogs, error) {
+) (*model.PaginatedLogs, error) {
 	countQ, countArgs := CountLogsQuery(lf)
 
 	var total int
@@ -90,7 +90,7 @@ func (s *DBStore) GetLogs(
 		}
 
 		logs = append(logs, l)
-		
+
 	}
 
 	if err := rows.Err(); err != nil {
@@ -98,10 +98,10 @@ func (s *DBStore) GetLogs(
 	}
 
 	return &model.PaginatedLogs{
-		Logs: logs,
-		Total: total,
-		Page: lf.Page,
-		Limit: lf.Limit,
+		Logs:    logs,
+		Total:   total,
+		Page:    lf.Page,
+		Limit:   lf.Limit,
 		HasMore: (lf.Page * lf.Limit) < total,
 	}, nil
 }
