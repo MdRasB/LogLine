@@ -1,0 +1,17 @@
+.git
+.gitignore
+
+.env
+.env.*
+!.env.example
+
+README.md
+
+tmp/
+logs/
+
+*.log
+
+Dockerfile
+compose.yaml
+Caddyfile

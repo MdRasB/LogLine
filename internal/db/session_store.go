@@ -36,7 +36,6 @@ func (s *SessionStore) CreateSession(session model.Session) error {
 		session.ExpiresAt,
 		session.CreatedAt,
 	)
-
 	if err != nil {
 		return err
 	}
@@ -71,7 +70,6 @@ func (s *SessionStore) GetSessionByTokenHash(tokenHash string) (model.Session, e
 
 	if err != nil {
 		return session, fmt.Errorf("getting session by token: %w", err)
-
 	}
 
 	return session, nil
@@ -88,7 +86,6 @@ func (s *SessionStore) DeleteSession(id uuid.UUID) error {
 		query,
 		id,
 	)
-
 	if err != nil {
 		return fmt.Errorf("deleting session: %w", err)
 	}
@@ -110,7 +107,6 @@ func (s *SessionStore) DeleteExpiredSessions() error {
 		context.Background(),
 		query,
 	)
-
 	if err != nil {
 		return fmt.Errorf("deleting expired session: %w", err)
 	}

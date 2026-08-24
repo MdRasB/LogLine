@@ -10,7 +10,6 @@ import (
 	"github.com/MdRasB/LogLine/internal/model"
 	"github.com/google/uuid"
 
-	//"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
@@ -39,7 +38,6 @@ func (u *UserStore) CreateUser(user model.User) error {
 		user.PasswordHash,
 		user.CreatedAt,
 	)
-
 	if err != nil {
 		return err
 	}
