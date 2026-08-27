@@ -7,9 +7,7 @@
 	docker-shell docker-rebuild docker-clean \
 	compose-build compose-up compose-down compose-logs
 
-# -------------------------
 # Go application
-# -------------------------
 
 run:
 	go run cmd/api/main.go
@@ -20,9 +18,7 @@ build:
 compile:
 	go build ./...
 
-# -------------------------
 # Database
-# -------------------------
 
 db-up:
 	docker compose up -d db
@@ -36,9 +32,7 @@ db-logs:
 db-run:
 	docker exec -it loglinedb psql -U logline -d loglinedb
 
-# -------------------------
 # Database migrations
-# -------------------------
 
 migrate:
 	GOOSE_DRIVER=postgres \
@@ -54,9 +48,7 @@ migrate-status:
 	-dir migrations \
 	status
 
-# -------------------------
 # Testing / linting
-# -------------------------
 
 test:
 	go test ./...
@@ -64,9 +56,7 @@ test:
 check:
 	golangci-lint run -v
 
-# -------------------------
 # Docker
-# -------------------------
 
 docker-build:
 	docker build -t logline:dev .
@@ -87,9 +77,7 @@ docker-clean:
 	docker compose down --rmi local
 
 
-# ---------------------
 #  Docker compose
-#  --------------------
 
 compose-build:
 	docker compose build
