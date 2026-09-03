@@ -270,7 +270,7 @@ present, via `godotenv`). See `example.env` for a working template.
 | `DB_URL`                  | *(none)*   | **Required.** PostgreSQL connection string, e.g. `postgres://user:pass@host:5432/db`. |
 | `REQLIMIT`                | `5`        | Allowed requests per second, per client IP (token bucket refill rate).       |
 | `BURST`                   | `10`       | Token bucket burst capacity per client IP.                                   |
-| `VERSION`                 | `v0.0.0`   | Build/version string surfaced by `GET /health`.                              |
+| `VERSION`                 | `v1.0.0`   | Build/version string surfaced by `GET /health`.                              |
 | `READ_TIMEOUT`            | `10s`      | `http.Server.ReadTimeout`.                                                    |
 | `READ_HEADER_TIMEOUT`     | `5s`       | `http.Server.ReadHeaderTimeout`.                                              |
 | `WRITE_TIMEOUT`           | `15s`      | `http.Server.WriteTimeout`.                                                   |

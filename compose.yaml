@@ -13,7 +13,7 @@ services:
       REQLIMIT: "5"
       BURST: "10"
 
-      VERSION: "v0.8.10"
+      VERSION: "v1.0.0"
 
       READ_TIMEOUT: "10s"
       READ_HEADER_TIMEOUT: "5s"
