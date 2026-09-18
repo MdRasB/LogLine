@@ -276,8 +276,11 @@ present, via `godotenv`). See `example.env` for a working template.
 | `WRITE_TIMEOUT`           | `15s`      | `http.Server.WriteTimeout`.                                                   |
 | `IDLE_TIMEOUT`            | `60s`      | `http.Server.IdleTimeout`.                                                    |
 
-Startup fails fast (non-zero exit) if `DB_URL` is unset, or if any timeout/rate-limit value
-fails to parse or is non-positive — the server never starts in a half-configured state.
+Startup is **intended** to fail fast (non-zero exit) if `DB_URL` is unset, or if any
+timeout/rate-limit value fails to parse or is non-positive. **This currently doesn't work
+correctly** — see the `config.Load()` bug under
+[Roadmap / Known Limitations](#roadmap--known-limitations): misconfiguration today causes a
+nil-pointer panic on startup rather than the clean error message this table implies.
 
 ## Database Schema
 
@@ -402,8 +405,10 @@ curl "http://localhost:8080/logs?service=billing-api&level=error&search=timeout&
 ### `GET /dashboard`
 
 Renders the server-side HTML dashboard (accepts the same `service`, `level`, `search`,
-`page`, `limit` query parameters as `/logs`). Currently unauthenticated — see
-[Security Model](#security-model).
+`page`, `limit` query parameters as `/logs`). Currently unauthenticated, and — unlike
+`GET /logs` — its `limit` parameter is **not** capped at 100, so it's an easy target for
+resource-exhaustion abuse until both are fixed (see
+[Security Model](#security-model) and [Known Limitations](#roadmap--known-limitations)).
 
 ### `GET /health`
 
@@ -434,7 +439,9 @@ Returns `503 Service Unavailable` with `"status": "unhealthy"` if the database i
   constant-time-verify pattern as sessions, via `auth.GenerateAPIKey` / `auth.VerifyAPIKey`.
 - **Rate limiting** is applied per client IP on every route (public and protected) before any
   handler logic runs, mitigating brute-force and abuse traffic at the edge of the middleware
-  chain.
+  chain. Note it currently keys off `r.RemoteAddr` directly, so behind a reverse proxy or load
+  balancer every client will appear to share the proxy's IP unless a trusted
+  `X-Forwarded-For`/`X-Real-IP` header is read instead.
 - **Body size limits** — ingest and auth handlers wrap the request body in
   `http.MaxBytesReader` (1 MiB) to bound memory usage from oversized payloads.
 - **Strict JSON decoding** — request bodies are decoded with `DisallowUnknownFields`, rejecting
@@ -442,6 +449,10 @@ Returns `503 Service Unavailable` with `"status": "unhealthy"` if the database i
 - **Panic isolation** — the recovery middleware ensures an unhandled panic in any single
   handler returns a `500` instead of taking down the process or leaking a stack trace to the
   client.
+- **`model.User.PasswordHash` has no `json:"-"` tag.** No current handler serializes a `User`
+  struct directly back to a client, so this isn't exploited today, but it's a latent leak: the
+  first future endpoint that returns a `User` (e.g. a "get profile" route) by mistake would
+  ship the bcrypt hash to the client. Worth tagging defensively now.
 
 ## Request Lifecycle & Middleware Pipeline
 
@@ -510,7 +521,7 @@ make check
 ## Makefile Reference
 
 | Command              | Description                                                   |
-|-----------------------|------------------------------------------------------------------|
+|-----------------------|--------------------------------------------------------------------|
 | `make run`             | Run the API server directly with `go run`.                        |
 | `make build`           | Build the `logline` binary from `cmd/api`.                        |
 | `make compile`         | Compile all packages (`go build ./...`) without producing a binary.|
@@ -557,14 +568,32 @@ of a rolling deploy.
 This project is under active development. Notable gaps an architect/reviewer should be aware
 of before relying on it in production:
 
+- **`config.Load()` doesn't actually fail fast — it can nil-pointer panic instead.** Three
+  validation branches in `internal/config/config.go` (the empty-`DB_URL` check, the
+  negative-`Burst`/`ReqPerSec` check, and the non-positive-timeout check) `return nil, err`
+  where `err` is left over from an earlier, *successful* parse and is therefore `nil`. So on
+  misconfiguration, `config.Load()` returns `(nil, nil)`; `main.go`'s `if err != nil` guard
+  never fires; the nil `*Config` gets passed into `server.NewServer`; and the process panics
+  on the first field access instead of printing the clean, actionable error message the log
+  line right before it implies. Fix: replace `err` with a fresh `errors.New(...)` /
+  `fmt.Errorf(...)` on each of those three `return` statements.
 - **`api_keys` table exists but isn't wired up yet** — key generation/verification primitives
   are implemented in `internal/auth`, but there is no `APIKeyStore`, handler, or middleware
   consuming them yet. Today, `/ingest` is protected by the same session-token auth as the
   dashboard, not by service-scoped API keys.
 - **`GET /dashboard` is currently unauthenticated** (registered under `publicChain`), while
   `GET /logs` (the equivalent JSON data) requires a session. Worth aligning before exposing the
-  dashboard beyond a trusted network.
-- **`DashboardHandler.Stats`** is an unimplemented stub (`internal/handler/dashboard.go`).
+  dashboard beyond a trusted network. Compounding this, its `limit` query parameter has no
+  upper bound (unlike `/logs`, which is capped at 100), so it's also a resource-exhaustion
+  vector against Postgres while it stays public.
+- **`DashboardHandler.Stats`** is an unimplemented stub (`internal/handler/dashboard.go`) and,
+  separately, is never registered as a route in `internal/server/routes.go` — it's currently
+  dead code either way.
+- **`model.User.PasswordHash` lacks a `json:"-"` tag** — not exploited by any handler today,
+  but a defensive fix worth making before any "get current user" endpoint is added.
+- **Rate limiter keys off `r.RemoteAddr`**, not a proxy-aware header, so behind a reverse
+  proxy/load balancer every client currently looks like the same IP unless
+  `X-Forwarded-For`/`X-Real-IP` is read and trusted appropriately.
 - **No session-store lookup index note**: `sessions.token_hash` is unique-indexed, but there is
   no background job yet to purge expired sessions beyond the ad-hoc
   `SessionStore.DeleteExpiredSessions` method — it isn't currently scheduled anywhere.
