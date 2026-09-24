@@ -10,7 +10,6 @@ single container.
 [![Go Build](https://github.com/MdRasB/LogLine/actions/workflows/go.yml/badge.svg)](https://github.com/MdRasB/LogLine/actions/workflows/go.yml)
 [![PostgreSQL](https://img.shields.io/badge/postgres-18-336791?logo=postgresql&logoColor=white)](https://www.postgresql.org/)
 [![Docker](https://img.shields.io/badge/docker-ready-2496ED?logo=docker&logoColor=white)](Dockerfile)
-[![Status](https://img.shields.io/badge/status-active--development-yellow)](#roadmap--known-limitations)
 
 ---
 
@@ -38,7 +37,6 @@ single container.
 - [Testing](#testing)
 - [Makefile Reference](#makefile-reference)
 - [Deployment](#deployment)
-- [Roadmap / Known Limitations](#roadmap--known-limitations)
 - [Contributing](#contributing)
 
 ---
@@ -139,7 +137,7 @@ flowchart TB
   plaintext), and bearer-token protected routes.
 - **API key primitives** — key generation and constant-time verification utilities
   (`ll_live_*` prefix) plus a dedicated `api_keys` table, intended for service-to-service
-  ingest authentication (see [Roadmap](#roadmap--known-limitations)).
+  ingest authentication.
 - **Per-IP rate limiting** — token-bucket limiter (`golang.org/x/time/rate`) keyed by client
   IP, with automatic cleanup of stale clients.
 - **Structured request logging** — every request is logged via `log/slog` with a generated
@@ -279,7 +277,7 @@ present, via `godotenv`). See `example.env` for a working template.
 Startup is **intended** to fail fast (non-zero exit) if `DB_URL` is unset, or if any
 timeout/rate-limit value fails to parse or is non-positive. **This currently doesn't work
 correctly** — see the `config.Load()` bug under
-[Roadmap / Known Limitations](#roadmap--known-limitations): misconfiguration today causes a
+the configuration validation path: misconfiguration today causes a
 nil-pointer panic on startup rather than the clean error message this table implies.
 
 ## Database Schema
@@ -408,7 +406,7 @@ Renders the server-side HTML dashboard (accepts the same `service`, `level`, `se
 `page`, `limit` query parameters as `/logs`). Currently unauthenticated, and — unlike
 `GET /logs` — its `limit` parameter is **not** capped at 100, so it's an easy target for
 resource-exhaustion abuse until both are fixed (see
-[Security Model](#security-model) and [Known Limitations](#roadmap--known-limitations)).
+[Security Model](#security-model)).
 
 ### `GET /health`
 
@@ -433,8 +431,7 @@ Returns `503 Service Unavailable` with `"status": "unhealthy"` if the database i
 - **Session tokens** (`ll_sess_<64 hex chars>`) are generated from `crypto/rand`, returned to
   the client exactly once at login, and stored server-side only as a SHA-256 hash — the
   plaintext token is unrecoverable from the database. Comparison during validation would
-  ideally use `crypto/subtle.ConstantTimeCompare` end-to-end (see [Roadmap](#roadmap--known-limitations)
-  regarding session lookup).
+  ideally use `crypto/subtle.ConstantTimeCompare` end-to-end regarding session lookup).
 - **API keys** (`ll_live_<64 hex chars>`) follow the same generate-once / hash-at-rest /
   constant-time-verify pattern as sessions, via `auth.GenerateAPIKey` / `auth.VerifyAPIKey`.
 - **Rate limiting** is applied per client IP on every route (public and protected) before any
@@ -562,46 +559,6 @@ For production use beyond local Compose, typical next steps are: externalizing `
 secrets via your platform's secret manager, fronting the service with a reverse proxy/ingress
 for TLS termination, and running migrations as a separate release step (`make migrate`) ahead
 of a rolling deploy.
-
-## Roadmap / Known Limitations
-
-This project is under active development. Notable gaps an architect/reviewer should be aware
-of before relying on it in production:
-
-- **`config.Load()` doesn't actually fail fast — it can nil-pointer panic instead.** Three
-  validation branches in `internal/config/config.go` (the empty-`DB_URL` check, the
-  negative-`Burst`/`ReqPerSec` check, and the non-positive-timeout check) `return nil, err`
-  where `err` is left over from an earlier, *successful* parse and is therefore `nil`. So on
-  misconfiguration, `config.Load()` returns `(nil, nil)`; `main.go`'s `if err != nil` guard
-  never fires; the nil `*Config` gets passed into `server.NewServer`; and the process panics
-  on the first field access instead of printing the clean, actionable error message the log
-  line right before it implies. Fix: replace `err` with a fresh `errors.New(...)` /
-  `fmt.Errorf(...)` on each of those three `return` statements.
-- **`api_keys` table exists but isn't wired up yet** — key generation/verification primitives
-  are implemented in `internal/auth`, but there is no `APIKeyStore`, handler, or middleware
-  consuming them yet. Today, `/ingest` is protected by the same session-token auth as the
-  dashboard, not by service-scoped API keys.
-- **`GET /dashboard` is currently unauthenticated** (registered under `publicChain`), while
-  `GET /logs` (the equivalent JSON data) requires a session. Worth aligning before exposing the
-  dashboard beyond a trusted network. Compounding this, its `limit` query parameter has no
-  upper bound (unlike `/logs`, which is capped at 100), so it's also a resource-exhaustion
-  vector against Postgres while it stays public.
-- **`DashboardHandler.Stats`** is an unimplemented stub (`internal/handler/dashboard.go`) and,
-  separately, is never registered as a route in `internal/server/routes.go` — it's currently
-  dead code either way.
-- **`model.User.PasswordHash` lacks a `json:"-"` tag** — not exploited by any handler today,
-  but a defensive fix worth making before any "get current user" endpoint is added.
-- **Rate limiter keys off `r.RemoteAddr`**, not a proxy-aware header, so behind a reverse
-  proxy/load balancer every client currently looks like the same IP unless
-  `X-Forwarded-For`/`X-Real-IP` is read and trusted appropriately.
-- **No session-store lookup index note**: `sessions.token_hash` is unique-indexed, but there is
-  no background job yet to purge expired sessions beyond the ad-hoc
-  `SessionStore.DeleteExpiredSessions` method — it isn't currently scheduled anywhere.
-- **CI does not run tests** — `go test` is commented out in the GitHub Actions workflow,
-  pending a provisioned test database in CI.
-- **No `LICENSE` file** is currently present in the repository.
-- **No rotation/pruning strategy for the `logs` table** — there's no TTL, partitioning, or
-  archival job yet; at high ingest volume this table will grow unbounded.
 
 ## Contributing
 
